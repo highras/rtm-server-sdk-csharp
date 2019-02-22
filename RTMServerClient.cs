@@ -121,7 +121,7 @@ namespace com.rtm
             }
         }
 
-        public bool sendMessage(long from, long to, byte mtype, string msg, string attrs)
+        public long sendMessage(long from, long to, byte mtype, string msg, string attrs, long mid = 0)
         {
             long salt = this.genSalt();
             JsonObject json = new JsonObject();
@@ -131,15 +131,23 @@ namespace com.rtm
             json["mtype"] = mtype;
             json["from"] = from;
             json["to"] = to;
-            json["mid"] = this.genMid();
+
+            if (mid == 0)
+                mid = this.genMid();
+
+            json["mid"] = mid;
             json["msg"] = msg;
             json["attrs"] = attrs;
        
             string response;
-            return this.sendHttpRequest("sendmsg", json, out response);
+            bool ok = this.sendHttpRequest("sendmsg", json, out response);
+            if (ok)
+                return mid;
+            else
+                return 0;
         }
 
-        public bool sendMessages(long from, long[] tos, byte mtype, string msg, string attrs)
+        public long sendMessages(long from, long[] tos, byte mtype, string msg, string attrs, long mid = 0)
         {
             long salt = this.genSalt();
             JsonObject json = new JsonObject();
@@ -148,7 +156,11 @@ namespace com.rtm
             json["salt"] = salt;
             json["mtype"] = mtype;
             json["from"] = from;
-            json["mid"] = this.genMid();
+
+            if (mid == 0)
+                mid = this.genMid();
+
+            json["mid"] = mid;
             json["msg"] = msg;
             json["attrs"] = attrs;
 
@@ -160,10 +172,14 @@ namespace com.rtm
             json["tos"] = arr;
 
             string response;
-            return this.sendHttpRequest("sendmsgs", json, out response);
+            bool ok = this.sendHttpRequest("sendmsgs", json, out response);
+            if (ok)
+                return mid;
+            else
+                return 0;
         }
 
-        public bool sendGroupMessage(long from, long gid, byte mtype, string msg, string attrs) 
+        public long sendGroupMessage(long from, long gid, byte mtype, string msg, string attrs, long mid = 0) 
         {
             long salt = this.genSalt();
             JsonObject json = new JsonObject();
@@ -173,15 +189,23 @@ namespace com.rtm
             json["mtype"] = mtype;
             json["from"] = from;
             json["gid"] = gid;
-            json["mid"] = this.genMid();
+
+            if (mid == 0)
+                mid = this.genMid();
+
+            json["mid"] = mid;
             json["msg"] = msg;
             json["attrs"] = attrs;
             
             string response;
-            return this.sendHttpRequest("sendgroupmsg", json, out response);
+            bool ok = this.sendHttpRequest("sendgroupmsg", json, out response);
+            if (ok)
+                return mid;
+            else
+                return 0; 
         }
 
-        public bool sendRoomMessage(long from, long rid, byte mtype, string msg, string attrs)
+        public long sendRoomMessage(long from, long rid, byte mtype, string msg, string attrs, long mid = 0)
         {
             long salt = this.genSalt();
             JsonObject json = new JsonObject();
@@ -191,15 +215,23 @@ namespace com.rtm
             json["mtype"] = mtype;
             json["from"] = from;
             json["rid"] = rid;
-            json["mid"] = this.genMid();
+
+            if (mid == 0)
+                mid = this.genMid();
+
+            json["mid"] = mid;
             json["msg"] = msg;
             json["attrs"] = attrs;
             
             string response;
-            return this.sendHttpRequest("sendroommsg", json, out response);
+            bool ok = this.sendHttpRequest("sendroommsg", json, out response);
+            if (ok)
+                return mid;
+            else
+                return 0;
         }
 
-		public bool broadcastMessage(long from, byte mtype, string msg, string attrs)
+		public long broadcastMessage(long from, byte mtype, string msg, string attrs, long mid = 0)
 		{
 			long salt = this.genSalt();
             JsonObject json = new JsonObject();
@@ -208,12 +240,20 @@ namespace com.rtm
             json["salt"] = salt;
             json["mtype"] = mtype;
             json["from"] = from;
-            json["mid"] = this.genMid();
+
+            if (mid == 0)
+                mid = this.genMid();
+
+            json["mid"] = mid;
             json["msg"] = msg;
             json["attrs"] = attrs;
             
             string response;
-            return this.sendHttpRequest("broadcastmsg", json, out response);
+            bool ok = this.sendHttpRequest("broadcastmsg", json, out response);
+            if (ok)
+                return mid;
+            else
+                return 0;
 		}
 
 		public bool addFriends(long uid, long[] friends)

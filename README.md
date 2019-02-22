@@ -1,42 +1,47 @@
 #### API ####
 
-* `bool sendMessage(long from, long to, byte mtype, string msg, string attrs)`: 发送消息
+* `long sendMessage(long from, long to, byte mtype, string msg, string attrs, long mid = 0)`: 发送消息
     * `from`: **(long)** 发送方 id
     * `to`: **(long)** 接收方uid
     * `mtype`: **(byte)** 消息类型
     * `msg`: **(String)** 消息内容
     * `attrs`: **(String)** 消息附加信息, 没有可传`""`
+    * `mid`: **(long)** 消息 id, 用于过滤重复消息, 非重发时为0 `""`
 
 
-* `bool sendMessages(long from, long[] tos, byte mtype, string msg, string attrs)`: 发送多人消息
+* `long sendMessages(long from, long[] tos, byte mtype, string msg, string attrs, long mid = 0)`: 发送多人消息
     * `from`: **(long)** 发送方 id
     * `tos`: **(List(Long))** 接收方uids
     * `mtype`: **(byte)** 消息类型
     * `msg`: **(String)** 消息内容
     * `attrs`: **(String)** 消息附加信息, 没有可传`""`
+    * `mid`: **(long)** 消息 id, 用于过滤重复消息, 非重发时为0 `""`
 
 
-* `bool sendGroupMessage(long from, long gid, byte mtype, string msg, string attrs)`: 发送group消息
+* `long sendGroupMessage(long from, long gid, byte mtype, string msg, string attrs, long mid = 0)`: 发送group消息
     * `from`: **(long)** 发送方 id
     * `gid`: **(long)** group id
     * `mtype`: **(byte)** 消息类型
     * `msg`: **(String)** 消息内容
     * `attrs`: **(String)** 消息附加信息, 可传`""`
+    * `mid`: **(long)** 消息 id, 用于过滤重复消息, 非重发时为0 `""`
 
 
-* `bool sendRoomMessage(long from, long rid, byte mtype, string msg, string attrs)`: 发送room消息
+* `long sendRoomMessage(long from, long rid, byte mtype, string msg, string attrs, long mid = 0)`: 发送room消息
     * `from`: **(long)** 发送方 id
     * `rid`: **(long)** room id
     * `mtype`: **(byte)** 消息类型
     * `msg`: **(String)** 消息内容
     * `attrs`: **(String)** 消息附加信息, 可传`""`
+    * `mid`: **(long)** 消息 id, 用于过滤重复消息, 非重发时为0 `""`
 
 
-* `bool broadcastMessage(long from, byte mtype, string msg, string attrs)`: 广播消息(andmin id)
+* `long broadcastMessage(long from, byte mtype, string msg, string attrs, long mid = 0)`: 广播消息(andmin id)
     * `from`: **(long)** admin id
     * `mtype`: **(byte)** 消息类型
     * `msg`: **(String)** 消息内容
     * `attrs`: **(String)** 消息附加信息, 可传`""`
+    * `mid`: **(long)** 消息 id, 用于过滤重复消息, 非重发时为0 `""`
 
 * `bool addFriends(long uid, long[] friends)`: 添加好友，每次最多添加100人
     * `uid`: **(long)** 用户 id
