@@ -2,8 +2,10 @@ using System;
 using System.Text;
 using System.Net.Http;
 using System.Security.Cryptography;
-using System.Json;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace com.rtm
 {
@@ -56,6 +58,11 @@ namespace com.rtm
         public long mtime = 0;
     }
 
+    class HttpResult {
+        public bool ok = false;
+        public string response = ""; 
+    }
+
     class RTMServerClient
     {
         private int pid;
@@ -102,29 +109,31 @@ namespace com.rtm
 			}
 			return sb.ToString();
         }
-
-        private bool sendHttpRequest(string method, JsonObject json, out string response)
+        
+        private async Task<HttpResult> sendHttpRequest(string method, JObject json)
         {
             using (var client = new HttpClient())
             {
                 HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, "http://" + this.endpoint + "/service/" + method);
                 requestMessage.Content = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
 
-                var resp = client.SendAsync(requestMessage).Result; 
+                var resp = await client.SendAsync(requestMessage);
                 if (resp.IsSuccessStatusCode) {
-                    response = resp.Content.ReadAsStringAsync().Result;
-                    return true;
+                    HttpResult result = new HttpResult();
+                    result.ok = true;
+                    result.response = await resp.Content.ReadAsStringAsync();
+                    return result;
                 } else {
-                    response = resp.Content.ReadAsStringAsync().Result;
+                    string response = await resp.Content.ReadAsStringAsync();
                     throw new Exception(response);
                 }
             }
         }
 
-        public long sendMessage(long from, long to, byte mtype, string msg, string attrs, long mid = 0)
+        public async Task<long> sendMessage(long from, long to, byte mtype, string msg, string attrs, long mid = 0)
         {
             long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
@@ -139,18 +148,17 @@ namespace com.rtm
             json["msg"] = msg;
             json["attrs"] = attrs;
        
-            string response;
-            bool ok = this.sendHttpRequest("sendmsg", json, out response);
-            if (ok)
+            HttpResult result = await this.sendHttpRequest("sendmsg", json);
+            if (result.ok)
                 return mid;
             else
                 return 0;
         }
 
-        public long sendMessages(long from, long[] tos, byte mtype, string msg, string attrs, long mid = 0)
+        public async Task<long> sendMessages(long from, long[] tos, byte mtype, string msg, string attrs, long mid = 0)
         {
             long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
@@ -164,25 +172,24 @@ namespace com.rtm
             json["msg"] = msg;
             json["attrs"] = attrs;
 
-            JsonArray arr = new JsonArray();
+            JArray arr = new JArray();
             foreach (long l in tos)
             {
-                arr.Add(l);                
+                arr.Add(l);
             }
             json["tos"] = arr;
 
-            string response;
-            bool ok = this.sendHttpRequest("sendmsgs", json, out response);
-            if (ok)
+            HttpResult result = await this.sendHttpRequest("sendmsgs", json);
+            if (result.ok)
                 return mid;
             else
                 return 0;
         }
 
-        public long sendGroupMessage(long from, long gid, byte mtype, string msg, string attrs, long mid = 0) 
+        public async Task<long> sendGroupMessage(long from, long gid, byte mtype, string msg, string attrs, long mid = 0) 
         {
             long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
@@ -197,18 +204,17 @@ namespace com.rtm
             json["msg"] = msg;
             json["attrs"] = attrs;
             
-            string response;
-            bool ok = this.sendHttpRequest("sendgroupmsg", json, out response);
-            if (ok)
+            HttpResult result = await this.sendHttpRequest("sendgroupmsg", json);
+            if (result.ok)
                 return mid;
             else
                 return 0; 
         }
 
-        public long sendRoomMessage(long from, long rid, byte mtype, string msg, string attrs, long mid = 0)
+        public async Task<long> sendRoomMessage(long from, long rid, byte mtype, string msg, string attrs, long mid = 0)
         {
             long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
@@ -223,18 +229,17 @@ namespace com.rtm
             json["msg"] = msg;
             json["attrs"] = attrs;
             
-            string response;
-            bool ok = this.sendHttpRequest("sendroommsg", json, out response);
-            if (ok)
+            HttpResult result = await this.sendHttpRequest("sendroommsg", json);
+            if (result.ok)
                 return mid;
             else
                 return 0;
         }
 
-		public long broadcastMessage(long from, byte mtype, string msg, string attrs, long mid = 0)
+		public async Task<long> broadcastMessage(long from, byte mtype, string msg, string attrs, long mid = 0)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
@@ -248,69 +253,67 @@ namespace com.rtm
             json["msg"] = msg;
             json["attrs"] = attrs;
             
-            string response;
-            bool ok = this.sendHttpRequest("broadcastmsg", json, out response);
-            if (ok)
+            HttpResult result = await this.sendHttpRequest("broadcastmsg", json);
+            if (result.ok)
                 return mid;
             else
                 return 0;
 		}
 
-		public bool addFriends(long uid, long[] friends)
+		public async Task<bool> addFriends(long uid, long[] friends)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
             json["uid"] = uid;
 
-            JsonArray arr = new JsonArray();
+            JArray arr = new JArray();
             foreach (long l in friends)
             {
                 arr.Add(l);                
             }
             json["friends"] = arr;
 
-            string response;
-            return this.sendHttpRequest("addfriends", json, out response);
+            HttpResult result = await this.sendHttpRequest("addfriends", json);
+            return result.ok;
 		}
 
-		public bool deleteFriends(long uid, long[] friends)
+		public async Task<bool> deleteFriends(long uid, long[] friends)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
             json["uid"] = uid;
 
-            JsonArray arr = new JsonArray();
+            JArray arr = new JArray();
             foreach (long l in friends)
             {
                 arr.Add(l);                
             }
             json["friends"] = arr;
 
-            string response;
-            return this.sendHttpRequest("delfriends", json, out response);
+            HttpResult result =  await this.sendHttpRequest("delfriends", json);
+            return result.ok;
 		}
 
-		public long[] getFriends(long uid)
+		public async Task<long[]> getFriends(long uid)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
             json["uid"] = uid;
 
-            string response;
-            bool ok = this.sendHttpRequest("getfriends", json, out response);
+            HttpResult result = await this.sendHttpRequest("getfriends", json);
 
-			if (ok)
+			if (result.ok)
 			{
-				JsonValue uidsList = JsonValue.Parse(response)["uids"];
+				JArray uidsList = (JArray)JObject.Parse(result.response)["uids"];
 				long[] uids = new long[uidsList.Count];
 				for (int i = 0; i < uidsList.Count; i++)
 					uids[i] = ((long)uidsList[i]);
@@ -319,46 +322,44 @@ namespace com.rtm
 			return new long[0];
 		}
 
-		public bool isFriend(long uid, long fuid)
+		public async Task<bool> isFriend(long uid, long fuid)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
             json["uid"] = uid;
             json["fuid"] = fuid;
 
-            string response;
-            bool ok = this.sendHttpRequest("isfriend", json, out response);
-			if (ok) {
-				return (bool)JsonValue.Parse(response)["ok"];
+            HttpResult result = await this.sendHttpRequest("isfriend", json);
+			if (result.ok) {
+				return (bool)JObject.Parse(result.response)["ok"];
 			}	
 			return false;
 		}
 
-		public long[] isFriends(long uid, long[] fuids)
+		public async Task<long[]> isFriends(long uid, long[] fuids)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
             json["uid"] = uid;
 
-			JsonArray arr = new JsonArray();
+			JArray arr = new JArray();
             foreach (long l in fuids)
             {
                 arr.Add(l);                
             }
             json["fuids"] = arr;
 
-			string response;
-            bool ok = this.sendHttpRequest("isfriends", json, out response);
+            HttpResult result = await this.sendHttpRequest("isfriends", json);
 
-			if (ok)
+			if (result.ok)
 			{
-				JsonValue uidsList = JsonValue.Parse(response)["fuids"];
+				JArray uidsList = (JArray)JObject.Parse(result.response)["fuids"];
 				long[] uids = new long[uidsList.Count];
 				for (int i = 0; i < uidsList.Count; i++)
 					uids[i] = ((long)uidsList[i]);
@@ -367,74 +368,73 @@ namespace com.rtm
 			return new long[0];
 		}
 
-		public bool addGroupMembers(long gid, long[] uids)
+		public async Task<bool> addGroupMembers(long gid, long[] uids)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
             json["gid"] = gid;
 
-			JsonArray arr = new JsonArray();
+			JArray arr = new JArray();
             foreach (long l in uids)
             {
                 arr.Add(l);                
             }
             json["uids"] = arr;
 
-			string response;
-            return this.sendHttpRequest("addgroupmembers", json, out response);
+            HttpResult result = await this.sendHttpRequest("addgroupmembers", json);
+            return result.ok;
 		}
 
-		public bool deleteGroupMembers(long gid, long[] uids)
+		public async Task<bool> deleteGroupMembers(long gid, long[] uids)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
             json["gid"] = gid;
 
-			JsonArray arr = new JsonArray();
+			JArray arr = new JArray();
             foreach (long l in uids)
             {
                 arr.Add(l);                
             }
             json["uids"] = arr;
 
-			string response;
-            return this.sendHttpRequest("delgroupmembers", json, out response);
+            HttpResult result = await this.sendHttpRequest("delgroupmembers", json);
+            return result.ok;
 		}
 
-		public bool deleteGroup(long gid)
+		public async Task<bool> deleteGroup(long gid)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
             json["gid"] = gid;
 
-			string response;
-            return this.sendHttpRequest("delgroup", json, out response);
+            HttpResult result = await this.sendHttpRequest("delgroup", json);
+            return result.ok;
 		}
 
-		public long[] getGroupMembers(long gid)
+		public async Task<long[]> getGroupMembers(long gid)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
             json["gid"] = gid;
 
-			string response;
-            bool ok = this.sendHttpRequest("getgroupmembers", json, out response);
+            HttpResult result = await this.sendHttpRequest("getgroupmembers", json);
 
-			if (ok)
+			if (result.ok)
 			{
-				JsonValue uidsList = JsonValue.Parse(response)["uids"];
+				JArray uidsList = (JArray)JObject.Parse(result.response)["uids"];
 				long[] uids = new long[uidsList.Count];
 				for (int i = 0; i < uidsList.Count; i++)
 					uids[i] = ((long)uidsList[i]);
@@ -443,39 +443,37 @@ namespace com.rtm
 			return new long[0];
 		}
 
-		public bool isGroupMember(long gid, long uid)
+		public async Task<bool> isGroupMember(long gid, long uid)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
             json["gid"] = gid;
             json["uid"] = uid;
 
-            string response;
-            bool ok = this.sendHttpRequest("isgroupmember", json, out response);
-			if (ok) {
-				return (bool)JsonValue.Parse(response)["ok"];
-			}	
+            HttpResult result = await this.sendHttpRequest("isgroupmember", json);
+			if (result.ok) {
+				return (bool)JObject.Parse(result.response)["ok"];
+			}
 			return false;
 		}
 
-		public long[] getUserGroups(long uid)
+		public async Task<long[]> getUserGroups(long uid)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
             json["uid"] = uid;
 
-			string response;
-            bool ok = this.sendHttpRequest("getusergroups", json, out response);
+            HttpResult result = await this.sendHttpRequest("getusergroups", json);
 
-			if (ok)
+			if (result.ok)
 			{
-				JsonValue gidsList = JsonValue.Parse(response)["gids"];
+				JArray gidsList = (JArray)JObject.Parse(result.response)["gids"];
 				long[] gids = new long[gidsList.Count];
 				for (int i = 0; i < gidsList.Count; i++)
 					gids[i] = ((long)gidsList[i]);
@@ -484,43 +482,41 @@ namespace com.rtm
 			return new long[0];
 		}
 
-		public string getToken(long uid)
+		public async Task<string> getToken(long uid)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
             json["uid"] = uid;
 
-            string response;
-            bool ok = this.sendHttpRequest("gettoken", json, out response);
-			if (ok) {
-				return (string)JsonValue.Parse(response)["token"];
-			}	
+            HttpResult result = await this.sendHttpRequest("gettoken", json);
+			if (result.ok) {
+				return (string)JObject.Parse(result.response)["token"];
+			}
 			return "";
 		}
 
-		public long[] getOnlineUsers(long[] uids)
+		public async Task<long[]> getOnlineUsers(long[] uids)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
 
-			JsonArray arr = new JsonArray();
+			JArray arr = new JArray();
             foreach (long l in uids)
             {
                 arr.Add(l);                
             }
             json["uids"] = arr;
 
-			string response;
-            bool ok = this.sendHttpRequest("getonlineusers", json, out response);
-			if (ok)
+            HttpResult result = await this.sendHttpRequest("getonlineusers", json);
+			if (result.ok)
 			{
-				JsonValue uidsList = JsonValue.Parse(response)["uids"];
+				JArray uidsList = (JArray)JObject.Parse(result.response)["uids"];
 				long[] uidsArray = new long[uidsList.Count];
 				for (int i = 0; i < uidsList.Count; i++)
 					uidsArray[i] = ((long)uidsList[i]);
@@ -529,10 +525,10 @@ namespace com.rtm
 			return new long[0];
 		}
 
-		public bool addGroupBan(long gid, long uid, int btime)
+		public async Task<bool> addGroupBan(long gid, long uid, int btime)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
@@ -540,28 +536,28 @@ namespace com.rtm
             json["uid"] = uid;
             json["btime"] = btime;
 
-			string response;
-            return this.sendHttpRequest("addgroupban", json, out response);
+            HttpResult result = await this.sendHttpRequest("addgroupban", json);
+            return result.ok;
 		}
 
-		public bool removeGroupBan(long gid, long uid)
+		public async Task<bool> removeGroupBan(long gid, long uid)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
             json["gid"] = gid;
             json["uid"] = uid;
 
-			string response;
-            return this.sendHttpRequest("removegroupban", json, out response);
+            HttpResult result = await this.sendHttpRequest("removegroupban", json);
+            return result.ok;
 		}
 		
-		public bool addRoomBan(long rid, long uid, int btime)
+		public async Task<bool> addRoomBan(long rid, long uid, int btime)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
@@ -569,108 +565,105 @@ namespace com.rtm
             json["uid"] = uid;
             json["btime"] = btime;
 
-			string response;
-            return this.sendHttpRequest("addroomban", json, out response);
+            HttpResult result = await this.sendHttpRequest("addroomban", json);
+            return result.ok;
 		}
 
-		public bool removeRoomBan(long rid, long uid)
+		public async Task<bool> removeRoomBan(long rid, long uid)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
             json["rid"] = rid;
             json["uid"] = uid;
 
-			string response;
-            return this.sendHttpRequest("removeroomban", json, out response);
+            HttpResult result = await this.sendHttpRequest("removeroomban", json);
+            return result.ok;
 		}
 
-		public bool addProjectBlack(long uid, int btime)
+		public async Task<bool> addProjectBlack(long uid, int btime)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
             json["uid"] = uid;
             json["btime"] = btime;
 
-			string response;
-            return this.sendHttpRequest("addprojectblack", json, out response);
+            HttpResult result = await this.sendHttpRequest("addprojectblack", json);
+            return result.ok;
 		}
 
-		public bool removeProjectBlack(long uid)
+		public async Task<bool> removeProjectBlack(long uid)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
             json["uid"] = uid;
 
-			string response;
-            return this.sendHttpRequest("removeprojectblack", json, out response);
+            HttpResult result = await this.sendHttpRequest("removeprojectblack", json);
+            return result.ok;
 		}
 
-		public bool isBanOfGroup(long gid, long uid)
+		public async Task<bool> isBanOfGroup(long gid, long uid)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
             json["gid"] = gid;
             json["uid"] = uid;
 
-            string response;
-            bool ok = this.sendHttpRequest("isbanofgroup", json, out response);
-			if (ok) {
-				return (bool)JsonValue.Parse(response)["ok"];
+            HttpResult result = await this.sendHttpRequest("isbanofgroup", json);
+			if (result.ok) {
+				return (bool)JObject.Parse(result.response)["ok"];
 			}	
 			return false;
 		}
 
-		public bool isBanOfRoom(long rid, long uid)
+		public async Task<bool> isBanOfRoom(long rid, long uid)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
             json["rid"] = rid;
             json["uid"] = uid;
 
-            string response;
-            bool ok = this.sendHttpRequest("isbanofroom", json, out response);
-			if (ok) {
-				return (bool)JsonValue.Parse(response)["ok"];
+            HttpResult result = await this.sendHttpRequest("isbanofroom", json);
+			if (result.ok) {
+				return (bool)JObject.Parse(result.response)["ok"];
 			}
 			return false;
 		}
 
-		public bool isProjectBlack(long uid)
+		public async Task<bool> isProjectBlack(long uid)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
             json["uid"] = uid;
 
-            string response;
-            bool ok = this.sendHttpRequest("isprojectblack", json, out response);
-			if (ok) {
-				return (bool)JsonValue.Parse(response)["ok"];
+            HttpResult result = await this.sendHttpRequest("isprojectblack", json);
+			if (result.ok) {
+				return (bool)JObject.Parse(result.response)["ok"];
 			}
 			return false;
 		}
 
-		public Dictionary<string, dynamic> getGroupMessage(long gid, Int16 num, bool desc, long begin = 0, long end = 0, long lastId = 0)
+		public async Task<Dictionary<string, dynamic>> getGroupMessage(long gid, Int16 num, bool desc, long begin = 0, long end = 0, long lastId = 0)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
@@ -684,18 +677,17 @@ namespace com.rtm
 			if (lastId > 0)
 				json["lastId"] = lastId;
 
-            string response;
-            bool ok = this.sendHttpRequest("getgroupmsg", json, out response);
-            if (ok) {
+            HttpResult result = await this.sendHttpRequest("getgroupmsg", json);
+            if (result.ok) {
 		        Dictionary<string, dynamic> map = new Dictionary<string, dynamic>();
                 
-                JsonValue node = JsonValue.Parse(response);
+                JObject node = JObject.Parse(result.response);
                 map["num"] = (int)node["num"];
                 map["lastid"] = (long)node["lastid"];
                 map["begin"] = (long)node["begin"];
                 map["end"] = (long)node["end"];
 
-				JsonValue msgList = node["msgs"];
+				JArray msgList = (JArray)node["msgs"];
                 GroupMsg[] msgs = new GroupMsg[msgList.Count];
                 for (int i = 0; i < msgList.Count; i++)
                 {
@@ -718,10 +710,10 @@ namespace com.rtm
 			return new Dictionary<string, dynamic>();
 		}
 
-		public Dictionary<string, dynamic> getRoomMessage(long rid, Int16 num, bool desc, long begin = 0, long end = 0, long lastId = 0)
+		public async Task<Dictionary<string, dynamic>> getRoomMessage(long rid, Int16 num, bool desc, long begin = 0, long end = 0, long lastId = 0)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
@@ -735,18 +727,17 @@ namespace com.rtm
 			if (lastId > 0)
 				json["lastId"] = lastId;
 
-            string response;
-            bool ok = this.sendHttpRequest("getroommsg", json, out response);
-            if (ok) {
+            HttpResult result = await this.sendHttpRequest("getroommsg", json);
+            if (result.ok) {
 		        Dictionary<string, dynamic> map = new Dictionary<string, dynamic>();
                 
-                JsonValue node = JsonValue.Parse(response);
+                JObject node = JObject.Parse(result.response);
                 map["num"] = (int)node["num"];
                 map["lastid"] = (long)node["lastid"];
                 map["begin"] = (long)node["begin"];
                 map["end"] = (long)node["end"];
 
-				JsonValue msgList = node["msgs"];
+				JArray msgList = (JArray)node["msgs"];
                 RoomMsg[] msgs = new RoomMsg[msgList.Count];
                 for (int i = 0; i < msgList.Count; i++)
                 {
@@ -769,10 +760,10 @@ namespace com.rtm
 			return new Dictionary<string, dynamic>();
 		}
         
-        public Dictionary<string, dynamic> getBroadcastMessage(Int16 num, bool desc, long begin = 0, long end = 0, long lastId = 0)
+        public async Task<Dictionary<string, dynamic>> getBroadcastMessage(Int16 num, bool desc, long begin = 0, long end = 0, long lastId = 0)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
@@ -785,18 +776,17 @@ namespace com.rtm
 			if (lastId > 0)
 				json["lastId"] = lastId;
 
-            string response;
-            bool ok = this.sendHttpRequest("getbroadcastmsg", json, out response);
-            if (ok) {
+            HttpResult result = await this.sendHttpRequest("getbroadcastmsg", json);
+            if (result.ok) {
 		        Dictionary<string, dynamic> map = new Dictionary<string, dynamic>();
                 
-                JsonValue node = JsonValue.Parse(response);
+                JObject node = JObject.Parse(result.response);
                 map["num"] = (int)node["num"];
                 map["lastid"] = (long)node["lastid"];
                 map["begin"] = (long)node["begin"];
                 map["end"] = (long)node["end"];
 
-				JsonValue msgList = node["msgs"];
+				JArray msgList = (JArray)node["msgs"];
                 BroadcastMsg[] msgs = new BroadcastMsg[msgList.Count];
                 for (int i = 0; i < msgList.Count; i++)
                 {
@@ -819,10 +809,10 @@ namespace com.rtm
 			return new Dictionary<string, dynamic>();
 		}
 
-        public Dictionary<string, dynamic> getP2PMessage(long uid, long ouid, Int16 num, bool desc, long begin = 0, long end = 0, long lastId = 0)
+        public async Task<Dictionary<string, dynamic>> getP2PMessage(long uid, long ouid, Int16 num, bool desc, long begin = 0, long end = 0, long lastId = 0)
 		{
 			long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
@@ -837,18 +827,17 @@ namespace com.rtm
 			if (lastId > 0)
 				json["lastId"] = lastId;
 
-            string response;
-            bool ok = this.sendHttpRequest("getp2pmsg", json, out response);
-			if (ok) {
+            HttpResult result = await this.sendHttpRequest("getp2pmsg", json);
+			if (result.ok) {
 		        Dictionary<string, dynamic> map = new Dictionary<string, dynamic>();
                 
-                JsonValue node = JsonValue.Parse(response);
+                JObject node = JObject.Parse(result.response);
                 map["num"] = (int)node["num"];
                 map["lastid"] = (long)node["lastid"];
                 map["begin"] = (long)node["begin"];
                 map["end"] = (long)node["end"];
 
-				JsonValue msgList = node["msgs"];
+				JArray msgList = (JArray)node["msgs"];
                 P2PMsg[] msgs = new P2PMsg[msgList.Count];
                 for (int i = 0; i < msgList.Count; i++)
                 {
@@ -871,38 +860,38 @@ namespace com.rtm
 			return new Dictionary<string, dynamic>();
 		}
 
-        public bool addRoomMember(long rid, long uid)
+        public async Task<bool> addRoomMember(long rid, long uid)
         {
             long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
             json["rid"] = rid;
             json["uid"] = uid;
 
-			string response;
-            return this.sendHttpRequest("addroommember", json, out response);
+            HttpResult result = await this.sendHttpRequest("addroommember", json);
+            return result.ok;
         }
 
-        public bool deleteRoomMember(long rid, long uid)
+        public async Task<bool> deleteRoomMember(long rid, long uid)
         {
             long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
             json["rid"] = rid;
             json["uid"] = uid;
 
-			string response;
-            return this.sendHttpRequest("delroommember", json, out response);
+            HttpResult result = await this.sendHttpRequest("delroommember", json);
+            return result.ok;
         }
 
-        public bool deleteMessage(long mid, long from, long xid, byte type)
+        public async Task<bool> deleteMessage(long mid, long from, long xid, byte type)
         {
             long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
@@ -911,14 +900,14 @@ namespace com.rtm
             json["xid"] = xid;
             json["type"] = type;
 
-			string response;
-            return this.sendHttpRequest("delmsg", json, out response);
+            HttpResult result = await this.sendHttpRequest("delmsg", json);
+            return result.ok;
         }
 
-        public bool kickout(long uid, string ce = "")
+        public async Task<bool> kickout(long uid, string ce = "")
         {
             long salt = this.genSalt();
-            JsonObject json = new JsonObject();
+            JObject json = new JObject();
             json["pid"] = this.pid;
             json["sign"] = this.genSign(salt);
             json["salt"] = salt;
@@ -926,8 +915,8 @@ namespace com.rtm
             if (ce != "")
                 json["ce"] = ce;
 
-			string response;
-            return this.sendHttpRequest("kickout", json, out response);
+            HttpResult result = await this.sendHttpRequest("kickout", json);
+            return result.ok;
         }
     }
 }
