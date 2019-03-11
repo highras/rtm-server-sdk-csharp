@@ -123,10 +123,10 @@ client.Connect();
 
 * `constructor(int pid, string secret, string host, int port, bool reconnect, int timeout)`: 构造RTMServerClient
     * `pid`: **(int)** 应用编号, RTM提供
-    * `secret`: **(String)** 应用加密, RTM提供
-    * `host`: **(String)** 地址, RTM提供
+    * `secret`: **(string)** 应用加密, RTM提供
+    * `host`: **(string)** 地址, RTM提供
     * `port`: **(int)** 端口, RTM提供
-    * `reconnect`: **(boolean)** 是否自动重连
+    * `reconnect`: **(bool)** 是否自动重连
     * `timeout`: **(int)** 连接超时时间(ms)
 
 * `Connect()`: 建立连接
