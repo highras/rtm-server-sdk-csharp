@@ -26,16 +26,13 @@ namespace com.rtm
                 long c = 0;
                 lock(Lock)
                 {
-                    if (++Count >= 999)
+                    if (++Count >= 99999999)
                         Count = 0;
                     c = Count;
                 }
                 return Convert.ToInt64(Convert.ToString(FPCommon.GetMilliTimestamp()) + Convert.ToString(c));
             }
         }
-
-        private Object SaltLock = new Object();
-        private long SaltSeq = 0;
 
         private int Pid;
         private string Secret;
@@ -99,14 +96,7 @@ namespace com.rtm
 
         private long GenMessageSalt() 
         {
-            long c = 0;
-            lock(SaltLock)
-            {
-                if (++SaltSeq >= 999)
-                    SaltSeq = 0;
-                c = SaltSeq;
-            }
-            return Convert.ToInt64(Convert.ToString(FPCommon.GetMilliTimestamp()) + Convert.ToString(c));
+            return MidGenerator.Gen();
         }
 
         private string CalcMd5(string str, bool upper)
