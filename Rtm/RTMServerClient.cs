@@ -26,7 +26,7 @@ namespace com.rtm
                 long c = 0;
                 lock(Lock)
                 {
-                    if (++Count >= 99999999)
+                    if (++Count >= 999)
                         Count = 0;
                     c = Count;
                 }
