@@ -804,11 +804,11 @@ Parameters:
 
 		public delegate void HistoryMessageDelegate(int count, long lastId, long beginMsec, long endMsec, List<HistoryMessage> messages, int errorCode);
 
-	Callabck for async method. Please refer [HistoryMessageDelegate](doc/Delegates.md#HistoryMessageDelegate).
+	Callabck for async method. Please refer [HistoryMessageDelegate](Delegates.md#HistoryMessageDelegate).
 
 + `out HistoryMessageResult result`
 
-	Fetched history data. Please refer [HistoryMessageResult](doc/Structures.md#HistoryMessageResult).
+	Fetched history data. Please refer [HistoryMessageResult](Structures.md#HistoryMessageResult).
 
 + `long userId`
 
@@ -874,11 +874,11 @@ Parameters:
 
 		public delegate void HistoryMessageDelegate(int count, long lastId, long beginMsec, long endMsec, List<HistoryMessage> messages, int errorCode);
 
-	Callabck for async method. Please refer [HistoryMessageDelegate](doc/Delegates.md#HistoryMessageDelegate).
+	Callabck for async method. Please refer [HistoryMessageDelegate](Delegates.md#HistoryMessageDelegate).
 
 + `out HistoryMessageResult result`
 
-	Fetched history data. Please refer [HistoryMessageResult](doc/Structures.md#HistoryMessageResult).
+	Fetched history data. Please refer [HistoryMessageResult](Structures.md#HistoryMessageResult).
 
 + `long userId`
 
@@ -945,11 +945,11 @@ Parameters:
 
 		public delegate void HistoryMessageDelegate(int count, long lastId, long beginMsec, long endMsec, List<HistoryMessage> messages, int errorCode);
 
-	Callabck for async method. Please refer [HistoryMessageDelegate](doc/Delegates.md#HistoryMessageDelegate).
+	Callabck for async method. Please refer [HistoryMessageDelegate](Delegates.md#HistoryMessageDelegate).
 
 + `out HistoryMessageResult result`
 
-	Fetched history data. Please refer [HistoryMessageResult](doc/Structures.md#HistoryMessageResult).
+	Fetched history data. Please refer [HistoryMessageResult](Structures.md#HistoryMessageResult).
 
 + `long userId`
 
@@ -1012,11 +1012,11 @@ Parameters:
 
   public delegate void HistoryMessageDelegate(int count, long lastId, long beginMsec, long endMsec, List<HistoryMessage> messages, int errorCode);
 
-  Callabck for async method. Please refer [HistoryMessageDelegate](doc/Delegates.md#HistoryMessageDelegate).
+  Callabck for async method. Please refer [HistoryMessageDelegate](Delegates.md#HistoryMessageDelegate).
 
 + `out HistoryMessageResult result`
 
-  Fetched history data. Please refer [HistoryMessageResult](doc/Structures.md#HistoryMessageResult).
+  Fetched history data. Please refer [HistoryMessageResult](Structures.md#HistoryMessageResult).
 
 + `long userId`
 
@@ -1135,12 +1135,12 @@ Parameters:
 + `Action<RetrievedMessage, int> callback`
 
 	Callabck for async method.  
-	First `RetrievedMessage` is retrieved data, please refer [RetrievedMessage](doc/Structures.md#RetrievedMessage);  
+	First `RetrievedMessage` is retrieved data, please refer [RetrievedMessage](Structures.md#RetrievedMessage);  
 	Second `int` is the error code indicating the calling is successful or the failed reasons.
 
 + `out RetrievedMessage retrievedMessage`
 
-	The retrieved data, please refer [RetrievedMessage](doc/Structures.md#RetrievedMessage).
+	The retrieved data, please refer [RetrievedMessage](Structures.md#RetrievedMessage).
 
 + `fromUid`
 

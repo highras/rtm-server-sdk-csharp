@@ -24,12 +24,12 @@ Parameters:
 + `Action<TranslatedInfo>, int> callback`
 
 	Callabck for async method.  
-	First `TranslatedInfo` is translation message result, please refer [TranslatedInfo](doc/Structures.md#TranslatedInfo);  
+	First `TranslatedInfo` is translation message result, please refer [TranslatedInfo](Structures.md#TranslatedInfo);  
 	Second `int` is the error code indicating the calling is successful or the failed reasons.
 
 + `out TranslatedInfo translatedinfo`
 
-	The translation message result, please refer [TranslatedInfo](doc/Structures.md#TranslatedInfo).
+	The translation message result, please refer [TranslatedInfo](Structures.md#TranslatedInfo).
 
 + `string text`
 
