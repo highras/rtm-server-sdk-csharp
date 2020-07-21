@@ -1,4 +1,4 @@
-# RTM Server CSharp SDK Friends API Docs
+# RTM Server CSharp SDK Token API Docs
 
 # Index
 
