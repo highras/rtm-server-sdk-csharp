@@ -192,14 +192,7 @@ namespace com.fpnn.rtm
 
             if (rtmMessage.messageType == (byte)MessageType.Chat)
             {
-                rtmMessage.translatedInfo = ProcessChatMessage(quest);
-                if (rtmMessage.translatedInfo != null)
-                {
-                    if (rtmMessage.translatedInfo.targetText.Length > 0)
-                        rtmMessage.stringMessage = rtmMessage.translatedInfo.targetText;
-                    else
-                        rtmMessage.stringMessage = rtmMessage.translatedInfo.sourceText;
-                }
+                rtmMessage.stringMessage = quest.Want<string>("msg");
             }
             else if (rtmMessage.messageType == (byte)MessageType.Cmd)
             {
@@ -249,8 +242,7 @@ namespace com.fpnn.rtm
 
             if (rtmMessage.messageType == (byte)MessageType.Chat)
             {
-                if (rtmMessage.translatedInfo != null)
-                    questProcessor.PushChat(rtmMessage);
+                questProcessor.PushChat(rtmMessage);
             }
             else if (rtmMessage.messageType == (byte)MessageType.Audio)
             {

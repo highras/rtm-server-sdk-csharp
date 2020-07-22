@@ -78,7 +78,7 @@ namespace com.fpnn.rtm.example
                 outStr += " translatedInfo.sourceLanguage: " + message.translatedInfo.sourceLanguage + " translatedInfo.targetLanguage: " + message.translatedInfo.targetLanguage + " translatedInfo.sourceText: " + message.translatedInfo.sourceText + " translatedInfo.targetText: " + message.translatedInfo.targetText;
             }
             if (message.messageType == (byte)MessageType.Audio && message.audioInfo != null) {
-                outStr += " audioInfo.sourceLanguage: " + message.audioInfo.sourceLanguage + " audioInfo.recognizedLanguage: " + message.audioInfo.recognizedLanguage + " audioInfo.recognizedText: " + message.audioInfo.duration;
+                outStr += " audioInfo.sourceLanguage: " + message.audioInfo.sourceLanguage + " audioInfo.recognizedLanguage: " + message.audioInfo.recognizedLanguage + " audioInfo.recognizedText: " + message.audioInfo.recognizedText + " audioInfo.duration: " + message.audioInfo.duration;
             }
             Console.WriteLine(outStr);
         }
