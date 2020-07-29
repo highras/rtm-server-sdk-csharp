@@ -4,13 +4,12 @@ namespace com.fpnn.rtm
 {
     public class RTMServerConfig
     {
-        public static readonly string SDKVersion = "1.0.3";
+        public static readonly string SDKVersion = "1.0.4";
         public static readonly string InterfaceVersion = "2.2.0";
 
         internal static int globalConnectTimeoutSeconds = 30;
         internal static int globalQuestTimeoutSeconds = 30;
         internal static int fileGateClientHoldingSeconds = 150;
-        internal static int lostConnectionAfterLastPingInSeconds = 120;
         internal static common.ErrorRecorder errorRecorder = null;
     }
 

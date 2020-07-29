@@ -44,13 +44,11 @@ namespace com.fpnn.rtm
         private DuplicatedMessageFilter duplicatedFilter;
         private ErrorRecorder errorRecorder;
         private Int64 connectionId;
-        private Int64 lastPingTime;
         private readonly Dictionary<string, QuestProcessDelegate> methodMap;
 
         public RTMMasterProcessor()
         {
             duplicatedFilter = new DuplicatedMessageFilter();
-            lastPingTime = 0;
 
             methodMap = new Dictionary<string, QuestProcessDelegate> {
                 { "ping", Ping },
@@ -76,17 +74,6 @@ namespace com.fpnn.rtm
         public void SetConnectionId(Int64 connId)
         {
             connectionId = connId;
-            Interlocked.Exchange(ref lastPingTime, 0);
-        }
-
-        public bool ConnectionIsAlive()
-        {
-            Int64 lastPingSec = Interlocked.Read(ref lastPingTime);
-
-            if (lastPingSec == 0 || ClientEngine.GetCurrentSeconds() - lastPingSec < RTMServerConfig.lostConnectionAfterLastPingInSeconds)
-                return true;
-            else
-                return false;
         }
 
         public QuestProcessDelegate GetQuestProcessDelegate(string method)
@@ -103,10 +90,6 @@ namespace com.fpnn.rtm
         public Answer Ping(Int64 connectionId, string endpoint, Quest quest)
         {
             AdvanceAnswer.SendAnswer(new Answer(quest));
-
-            Int64 now = ClientEngine.GetCurrentSeconds();
-            Interlocked.Exchange(ref lastPingTime, now);
-
             return null;
         }
 

@@ -416,19 +416,11 @@ namespace com.fpnn.rtm
             }
         }
 
-        public bool ConnectionIsAlive()
-        {
-            return processor.ConnectionIsAlive();
-        }
-
         private void RoutineFunc()
         {
             while (routineRunning)
             {
                 Thread.Sleep(1000);
-
-                if (ConnectionIsAlive() == false)
-                    client.Close();
 
                 CheckFileGateClients();
             }
