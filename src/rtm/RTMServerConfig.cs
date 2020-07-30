@@ -4,13 +4,49 @@ namespace com.fpnn.rtm
 {
     public class RTMServerConfig
     {
-        public static readonly string SDKVersion = "1.0.4";
+        public static readonly string SDKVersion = "1.0.5";
         public static readonly string InterfaceVersion = "2.2.0";
 
-        internal static int globalConnectTimeoutSeconds = 30;
+        public static int globalConnectTimeoutSeconds = 30;
         internal static int globalQuestTimeoutSeconds = 30;
         internal static int fileGateClientHoldingSeconds = 150;
         internal static common.ErrorRecorder errorRecorder = null;
+
+        public int globalConnectTimeout;
+        public int globalQuestTimeout;
+        public int fileClientHoldingSeconds;
+        public common.ErrorRecorder defaultErrorRecorder;
+
+        public RTMServerConfig()
+        {
+            globalConnectTimeout = RTMServerConfig.globalConnectTimeoutSeconds;
+            globalQuestTimeout = RTMServerConfig.globalQuestTimeoutSeconds;
+            fileClientHoldingSeconds = RTMServerConfig.fileGateClientHoldingSeconds;
+        }
+
+        internal static void Config(RTMServerConfig config)
+        {
+            globalConnectTimeoutSeconds = config.globalConnectTimeout;
+            globalQuestTimeoutSeconds = config.globalQuestTimeout;
+            fileGateClientHoldingSeconds = config.fileClientHoldingSeconds;
+            errorRecorder = config.defaultErrorRecorder;
+        }
+    }
+
+    public class RTMServerConfigCenter
+    {
+        public static void Init()
+        {
+            Init(null);
+        }
+
+        public static void Init(RTMServerConfig config)
+        {
+            if (config == null)
+                return;
+
+            RTMServerConfig.Config(config);
+        }
     }
 
     public enum TranslateLanguage
