@@ -23,9 +23,9 @@ Encryption Capability, depending on FPNN C# SDK.
 ## Usage
 
 ### Using package
-
+```
 	using com.fpnn.rtm;
-
+```
 
 
 ### Init
@@ -34,10 +34,19 @@ Encryption Capability, depending on FPNN C# SDK.
 
 #### FPNN SDK Init (REQUIRED)
 
+```
 	using com.fpnn;
 	ClientEngine.Init();
 	ClientEngine.Init(Config config);
+```
 
+#### RTM SDK Init (Optional)
+
+```
+	using com.fpnn;
+  RTMServerConfigCenter.Init();
+  RTMServerConfigCenter.Init(RTMServerConfig config);
+```
 
 
 ### Create
