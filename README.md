@@ -24,7 +24,7 @@ Encryption Capability, depending on FPNN C# SDK.
 
 ### Using package
 ```
-	using com.fpnn.rtm;
+using com.fpnn.rtm;
 ```
 
 
