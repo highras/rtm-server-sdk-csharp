@@ -18,7 +18,7 @@ Parameters:
 
 + `Action<string token, int errorCode> callback`
 
-+ `long userId
++ `long userId`
 
 	User ID.
 
@@ -55,7 +55,7 @@ Parameters:
 
 + `Action<int errorCode> callback`
 
-+ `long userId
++ `long userId`
 
   User ID.
 
@@ -86,17 +86,17 @@ Return Values:
 	//-- Sync Method
 	public int Kickout(long userId, string clientEndpoint = null, int timeout = 0)
 
-Remove login token.
+Kickout a login user.
 
 Parameters:
 
 + `Action<int errorCode> callback`
 
-+ `long userId
++ `long userId`
 
   User ID.
 
-+ `string clientEndpoint
++ `string clientEndpoint`
 
   Default is null, the rtm endpoint of the user logined, used for multi-user login
 
@@ -133,15 +133,15 @@ Parameters:
 
 + `Action<int errorCode> callback`
 
-+ `long userId
++ `long userId`
 
   User ID.
 
-+ `string appType
++ `string appType`
 
   apns or pcm
 
-+ `string deviceToken
++ `string deviceToken`
 
   device token
 
@@ -178,11 +178,11 @@ Parameters:
 
 + `Action<int errorCode> callback`
 
-+ `long userId
++ `long userId`
 
   User ID.
 
-+ `string deviceToken
++ `string deviceToken`
 
   device token
 
