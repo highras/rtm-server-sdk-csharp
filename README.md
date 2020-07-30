@@ -43,7 +43,7 @@ ClientEngine.Init(Config config);
 #### RTM SDK Init (Optional)
 
 ```
-using com.fpnn;
+using com.fpnn.rtm;
 RTMServerConfigCenter.Init();
 RTMServerConfigCenter.Init(RTMServerConfig config);
 ```
