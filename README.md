@@ -169,6 +169,10 @@ Please get your project params from RTM Console.
 	Console.WriteLine(com.fpnn.rtm.RTMServerConfig.InterfaceVersion);  // rtm server api version
 	Console.WriteLine(com.fpnn.Config.Version);  // fpnn sdk version
 
+### RTM Error Code
+
+Please refer [RTM Error Code](src/rtm/RTMErrorCode.cs)
+
 
 ### Structures
 
