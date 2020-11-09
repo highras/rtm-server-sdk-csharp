@@ -34,17 +34,6 @@ namespace com.fpnn.rtm.example
             ShowMessage("PushRoomChat", message);
         }
 
-        //-- Audio
-        public override void PushAudio(RTMMessage message) {
-            ShowMessage("PushAudio", message);
-        }
-        public override void PushGroupAudio(RTMMessage message) {
-            ShowMessage("PushGroupAudio", message);
-        }
-        public override void PushRoomAudio(RTMMessage message) {
-            ShowMessage("PushRoomAudio", message);
-        }
-
         //-- Cmd
         public override void PushCmd(RTMMessage message) {
             ShowMessage("PushCmd", message);
@@ -77,8 +66,8 @@ namespace com.fpnn.rtm.example
             if (message.messageType == (byte)MessageType.Chat && message.translatedInfo != null) {
                 outStr += " translatedInfo.sourceLanguage: " + message.translatedInfo.sourceLanguage + " translatedInfo.targetLanguage: " + message.translatedInfo.targetLanguage + " translatedInfo.sourceText: " + message.translatedInfo.sourceText + " translatedInfo.targetText: " + message.translatedInfo.targetText;
             }
-            if (message.messageType == (byte)MessageType.Audio && message.audioInfo != null) {
-                outStr += " audioInfo.sourceLanguage: " + message.audioInfo.sourceLanguage + " audioInfo.recognizedLanguage: " + message.audioInfo.recognizedLanguage + " audioInfo.recognizedText: " + message.audioInfo.recognizedText + " audioInfo.duration: " + message.audioInfo.duration;
+            if (message.fileInfo != null) {
+                outStr += " fileInfo.url: " + message.fileInfo.url + " fileInfo.size: " + message.fileInfo.size + " fileInfo.surl: " + message.fileInfo.surl + " fileInfo.isRTMAudio: " + message.fileInfo.isRTMAudio + " fileInfo.language: " + message.fileInfo.language + " fileInfo.duration: " + message.fileInfo.duration;
             }
             Console.WriteLine(outStr);
         }
@@ -265,46 +254,6 @@ namespace com.fpnn.rtm.example
             errorCode = client.BroadcastChat(out mtime, testFromUserID, testMessage, testAttrs);
             Console.WriteLine("[BroadcastChat Sync] errorCode: " + errorCode + " mtime: " + mtime);
 
-            client.SendAudio((long mtime, int errorCode) => 
-            {
-                Console.WriteLine("[SendChat Async] errorCode: " + errorCode + " mtime: " + mtime);
-            }, testFromUserID, testToUserId, new byte[1], testAttrs);
-
-            errorCode = client.SendAudio(out mtime, testFromUserID, testToUserId, new byte[1], testAttrs);
-            Console.WriteLine("[SendAudio Sync] errorCode: " + errorCode + " mtime: " + mtime);
-
-            client.SendAudios((long mtime, int errorCode) => 
-            {
-                Console.WriteLine("[SendAudios Async] errorCode: " + errorCode + " mtime: " + mtime);
-            }, testFromUserID, new HashSet<long>(){testToUserId}, new byte[1], testAttrs);
-
-            errorCode = client.SendAudios(out mtime, testFromUserID, new HashSet<long>(){testToUserId}, new byte[1], testAttrs);
-            Console.WriteLine("[SendAudios Sync] errorCode: " + errorCode + " mtime: " + mtime);
-
-            client.SendGroupAudio((long mtime, int errorCode) =>
-            {
-                Console.WriteLine("[SendGroupAudio Async] errorCode: " + errorCode + " mtime: " + mtime);
-            }, testFromUserID, testGroupId, new byte[1], testAttrs);
-
-            errorCode = client.SendGroupAudio(out mtime, testFromUserID, testGroupId, new byte[1], testAttrs);
-            Console.WriteLine("[SendGroupAudio Sync] errorCode: " + errorCode + " mtime: " + mtime);
-
-            client.SendRoomAudio((long mtime, int errorCode) =>
-            {
-                Console.WriteLine("[SendRoomAudio Async] errorCode: " + errorCode + " mtime: " + mtime);
-            }, testFromUserID, testRoomId, new byte[1], testAttrs);
-
-            errorCode = client.SendRoomAudio(out mtime, testFromUserID, testRoomId, new byte[1], testAttrs);
-            Console.WriteLine("[SendRoomAudio Sync] errorCode: " + errorCode + " mtime: " + mtime);
-
-            client.BroadcastAudio((long mtime, int errorCode) =>
-            {
-                Console.WriteLine("[BroadcastAudio Async] errorCode: " + errorCode + " mtime: " + mtime);
-            }, testFromUserID, new byte[1], testAttrs);
-
-            errorCode = client.BroadcastAudio(out mtime, testFromUserID, new byte[1], testAttrs);
-            Console.WriteLine("[BroadcastAudio Sync] errorCode: " + errorCode + " mtime: " + mtime);
-
             client.GetGroupChat((int count, long lastCursorId, long beginMsec, long endMsec, List<HistoryMessage> messages, int errorCode) =>
             {
                 Console.WriteLine("[GetGroupChat Async] errorCode: " + errorCode + " count: " + count);
@@ -340,6 +289,13 @@ namespace com.fpnn.rtm.example
 
             errorCode = client.GetP2PChat(out msgResult, testFromUserID, testToUserId, true, 10);
             Console.WriteLine("[GetP2PChat Sync] errorCode: " + errorCode + " count: " + msgResult.count);
+
+            TextCheckResult result;
+            errorCode = client.TextCheck(out result, "测试 共产党 aa", 123);
+            Console.WriteLine("[TextCheck Sync] errorCode: " + errorCode + " result: " + result.text);
+            client.TextCheck((TextCheckResult resultAsync, int errorCode) => {
+                Console.WriteLine("[TextCheck Async] errorCode: " + errorCode + " result: " + resultAsync.text);
+            }, "测试 共产党 aa", 123);
         }
 
         static void DataTest()
@@ -674,6 +630,7 @@ namespace com.fpnn.rtm.example
 
         static void Main(string[] args)
         {
+
             Console.WriteLine("Start Function Test");
 
             Console.WriteLine(com.fpnn.rtm.RTMServerConfig.SDKVersion);
@@ -704,6 +661,8 @@ namespace com.fpnn.rtm.example
             GroupTest();
             RoomTest();
             UserTest();
+
+            Thread.Sleep(5000);
         }
     }
 }

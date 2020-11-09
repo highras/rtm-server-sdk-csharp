@@ -6,22 +6,46 @@ namespace com.fpnn.rtm
     public delegate void RTMConnectionConnectedDelegate(Int64 connectionId, string endpoint, bool connected, bool isReconnect);
     public delegate void RTMConnectionCloseDelegate(Int64 connectionId, string endpoint, bool causedByError, bool isReconnect);
 
-    public class RetrievedMessage
+    public class CheckResult
     {
-        public long cursorId;
+        public int result;
+        public List<int> tags;
+    }
+
+    public class TextCheckResult : CheckResult
+    {
+        public string text;
+        public List<string> wlist;
+    }
+
+    public class FileInfo
+    {
+        //-- Common
+        public string url;          //-- File url
+        public int size = 0;        //-- File size
+
+        //-- For image type
+        public string surl;         //-- Thumb url, only for image type.
+
+        //-- For RTM audio
+        public bool isRTMAudio = false;
+        public string language;
+        public int duration = 0;
+    }
+
+    public class BaseMessage
+    {
         public byte messageType;
         public string stringMessage = null;
         public byte[] binaryMessage = null;
         public string attrs;
         public long modifiedTime;
+        public FileInfo fileInfo = null;
     }
 
-    public class AudioInfo
+    public class RetrievedMessage : BaseMessage
     {
-        public string sourceLanguage;
-        public string recognizedLanguage;
-        public string recognizedText;
-        public int duration;
+        public long cursorId;
     }
 
     public class TranslatedInfo
@@ -32,17 +56,11 @@ namespace com.fpnn.rtm
         public string targetText;
     }
 
-    public class RTMMessage
+    public class RTMMessage : BaseMessage
     {
         public long fromUid;
         public long toId;                   //-- xid
-        public byte messageType;
         public long messageId;
-        public string stringMessage = null;
-        public byte[] binaryMessage = null;
-        public string attrs;
-        public long modifiedTime;
-        public AudioInfo audioInfo = null;
         public TranslatedInfo translatedInfo = null;
     }
 

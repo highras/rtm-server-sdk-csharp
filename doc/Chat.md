@@ -10,17 +10,17 @@
 	public void SendChat(Action<long, int> callback, long fromUid, long toUid, string message, string attrs = "", int timeout = 0)
 	
 	//-- Sync Method
-	public int SendChat(out long mtime, long fromUid, long toUid, string message, string attrs = "", int timeout = 0)
+	public int SendChat(out long messageId, long fromUid, long toUid, string message, string attrs = "", int timeout = 0)
 
 Send P2P text chat.
 
 Parameters:
 
-+ `Action<long mtime, int errorCode> callback`
++ `Action<long messageId, int errorCode> callback`
 
-+ `out long mtime`
++ `out long messageId`
 
-	Sending completed time.
+	Message ID.
 
 + `long fromUid`
 
@@ -63,17 +63,17 @@ Return Values:
 	public void SendChats(Action<long, int> callback, long fromUid, HashSet<long> toUids, string message, string attrs = "", int timeout = 0)
 	
 	//-- Sync Method
-	public int SendChats(out long mtime, long fromUid, HashSet<long> toUids, string message, string attrs = "", int timeout = 0)
+	public int SendChats(out long messageId, long fromUid, HashSet<long> toUids, string message, string attrs = "", int timeout = 0)
 
 Send Multiple P2P text chat.
 
 Parameters:
 
-+ `Action<long mtime, int errorCode> callback`
++ `Action<long messageId, int errorCode> callback`
 
-+ `out long mtime`
++ `out long messageId`
 
-  Sending completed time.
+  Message ID.
 
 + `long fromUid`
 
@@ -116,17 +116,17 @@ Return Values:
 	public void SendGroupChat(Action<long, int> callback, long fromUid, long groupId, string message, string attrs = "", int timeout = 0)
 	
 	//-- Sync Method
-	public int SendGroupChat(out long mtime, long fromUid, long groupId, string message, string attrs = "", int timeout = 0)
+	public int SendGroupChat(out long messageId, long fromUid, long groupId, string message, string attrs = "", int timeout = 0)
 
 Send Group text chat.
 
 Parameters:
 
-+ `Action<long mtime, int errorCode> callback`
++ `Action<long messageId, int errorCode> callback`
 
-+ `out long mtime`
++ `out long messageId`
 
-  Sending completed time.
+  Message ID.
 
 + `long fromUid`
 
@@ -169,17 +169,17 @@ Return Values:
 	public void SendRoomChat(Action<long, int> callback, long fromUid, long roomId, string message, string attrs = "", int timeout = 0)
 	
 	//-- Sync Method
-	public int SendRoomChat(out long mtime, long fromUid, long roomId, string message, string attrs = "", int timeout = 0)
+	public int SendRoomChat(out long messageId, long fromUid, long roomId, string message, string attrs = "", int timeout = 0)
 
 Send  Room text chat.
 
 Parameters:
 
-+ `Action<long mtime, int errorCode> callback`
++ `Action<long messageId, int errorCode> callback`
 
-+ `out long mtime`
++ `out long messageId`
 
-  Sending completed time.
+  Message ID.
 
 + `long fromUid`
 
@@ -222,17 +222,17 @@ Return Values:
 	public void BroadcastChat(Action<long, int> callback, long fromUid, string message, string attrs = "", int timeout = 0)
 	
 	//-- Sync Method
-	public int BroadcastChat(out long mtime, long fromUid, string message, string attrs = "", int timeout = 0)
+	public int BroadcastChat(out long messageId, long fromUid, string message, string attrs = "", int timeout = 0)
 
 Broadcast text chat.
 
 Parameters:
 
-+ `Action<long mtime, int errorCode> callback`
++ `Action<long messageId, int errorCode> callback`
 
-+ `out long mtime`
++ `out long messageId`
 
-  Sending completed time.
+  Message ID.
 
 + `long fromUid`
 
@@ -271,17 +271,17 @@ Return Values:
 	public void SendCmd(Action<long, int> callback, long fromUid, long toUid, string message, string attrs = "", int timeout = 0)
 	
 	//-- Sync Method
-	public int SendCmd(out long mtime, long fromUid, long toUid, string message, string attrs = "", int timeout = 0)
+	public int SendCmd(out long messageId, long fromUid, long toUid, string message, string attrs = "", int timeout = 0)
 
 Send P2P cmd.
 
 Parameters:
 
-+ `Action<long mtime, int errorCode> callback`
++ `Action<long messageId, int errorCode> callback`
 
-+ `out long mtime`
++ `out long messageId`
 
-  Sending completed time.
+  Message ID.
 
 + `long fromUid`
 
@@ -324,17 +324,17 @@ Return Values:
 	public void SendCmds(Action<long, int> callback, long fromUid, HashSet<long> toUids, string message, string attrs = "", int timeout = 0)
 	
 	//-- Sync Method
-	public int SendCmds(out long mtime, long fromUid, HashSet<long> toUids, string message, string attrs = "", int timeout = 0)
+	public int SendCmds(out long messageId, long fromUid, HashSet<long> toUids, string message, string attrs = "", int timeout = 0)
 
 Send Multiple P2P cmd.
 
 Parameters:
 
-+ `Action<long mtime, int errorCode> callback`
++ `Action<long messageId, int errorCode> callback`
 
-+ `out long mtime`
++ `out long messageId`
 
-  Sending completed time.
+  Message ID.
 
 + `long fromUid`
 
@@ -377,17 +377,17 @@ Return Values:
 	public void SendGroupCmd(Action<long, int> callback, long fromUid, long groupId, string message, string attrs = "", int timeout = 0)
 	
 	//-- Sync Method
-	public int SendGroupCmd(out long mtime, long fromUid, long groupId, string message, string attrs = "", int timeout = 0)
+	public int SendGroupCmd(out long messageId, long fromUid, long groupId, string message, string attrs = "", int timeout = 0)
 
 Send Group cmd.
 
 Parameters:
 
-+ `Action<long mtime, int errorCode> callback`
++ `Action<long messageId, int errorCode> callback`
 
-+ `out long mtime`
++ `out long messageId`
 
-  Sending completed time.
+  Message ID.
 
 + `long fromUid`
 
@@ -430,17 +430,17 @@ Return Values:
 	public void SendRoomCmd(Action<long, int> callback, long fromUid, long roomId, string message, string attrs = "", int timeout = 0)
 	
 	//-- Sync Method
-	public int SendRoomCmd(out long mtime, long fromUid, long roomId, string message, string attrs = "", int timeout = 0)
+	public int SendRoomCmd(out long messageId, long fromUid, long roomId, string message, string attrs = "", int timeout = 0)
 
 Send  Room cmd.
 
 Parameters:
 
-+ `Action<long mtime, int errorCode> callback`
++ `Action<long messageId, int errorCode> callback`
 
-+ `out long mtime`
++ `out long messageId`
 
-  Sending completed time.
+  Message ID.
 
 + `long fromUid`
 
@@ -483,17 +483,17 @@ Return Values:
 	public void BroadcastCmd(Action<long, int> callback, long fromUid, string message, string attrs = "", int timeout = 0)
 	
 	//-- Sync Method
-	public int BroadcastCmd(out long mtime, long fromUid, string message, string attrs = "", int timeout = 0)
+	public int BroadcastCmd(out long messageId, long fromUid, string message, string attrs = "", int timeout = 0)
 
 Broadcast cmd.
 
 Parameters:
 
-+ `Action<long mtime, int errorCode> callback`
++ `Action<long messageId, int errorCode> callback`
 
-+ `out long mtime`
++ `out long messageId`
 
-  Sending completed time.
+  Message ID.
 
 + `long fromUid`
 
@@ -532,17 +532,17 @@ Return Values:
 	public void SendAudio(Action<long, int> callback, long fromUid, long toUid, byte[] message, string attrs = "", int timeout = 0)
 	
 	//-- Sync Method
-	public int SendAudio(out long mtime, long fromUid, long toUid, byte[] message, string attrs = "", int timeout = 0)
+	public int SendAudio(out long messageId, long fromUid, long toUid, byte[] message, string attrs = "", int timeout = 0)
 
 Send P2P audio.
 
 Parameters:
 
-+ `Action<long mtime, int errorCode> callback`
++ `Action<long messageId, int errorCode> callback`
 
-+ `out long mtime`
++ `out long messageId`
 
-  Sending completed time.
+  Message ID.
 
 + `long fromUid`
 
@@ -585,17 +585,17 @@ Return Values:
 	public void SendAudios(Action<long, int> callback, long fromUid, HashSet<long> toUids, byte[] message, string attrs = "", int timeout = 0)
 	
 	//-- Sync Method
-	public int SendAudios(out long mtime, long fromUid, HashSet<long> toUids, byte[] message, string attrs = "", int timeout = 0)
+	public int SendAudios(out long messageId, long fromUid, HashSet<long> toUids, byte[] message, string attrs = "", int timeout = 0)
 
 Send Multiple P2P audio.
 
 Parameters:
 
-+ `Action<long mtime, int errorCode> callback`
++ `Action<long messageId, int errorCode> callback`
 
-+ `out long mtime`
++ `out long messageId`
 
-  Sending completed time.
+  Message ID.
 
 + `long fromUid`
 
@@ -638,17 +638,17 @@ Return Values:
 	public void SendGroupAudio(Action<long, int> callback, long fromUid, long groupId, byte[] message, string attrs = "", int timeout = 0)
 	
 	//-- Sync Method
-	public int SendGroupAudio(out long mtime, long fromUid, long groupId, byte[] message, string attrs = "", int timeout = 0)
+	public int SendGroupAudio(out long messageId, long fromUid, long groupId, byte[] message, string attrs = "", int timeout = 0)
 
 Send Group audio.
 
 Parameters:
 
-+ `Action<long mtime, int errorCode> callback`
++ `Action<long messageId, int errorCode> callback`
 
-+ `out long mtime`
++ `out long messageId`
 
-  Sending completed time.
+  Message ID.
 
 + `long fromUid`
 
@@ -691,17 +691,17 @@ Return Values:
 	public void SendRoomAudio(Action<long, int> callback, long fromUid, long roomId, byte[] message, string attrs = "", int timeout = 0)
 	
 	//-- Sync Method
-	public int SendRoomAudio(out long mtime, long fromUid, long roomId, byte[] message, string attrs = "", int timeout = 0)
+	public int SendRoomAudio(out long messageId, long fromUid, long roomId, byte[] message, string attrs = "", int timeout = 0)
 
 Send  Room audio.
 
 Parameters:
 
-+ `Action<long mtime, int errorCode> callback`
++ `Action<long messageId, int errorCode> callback`
 
-+ `out long mtime`
++ `out long messageId`
 
-  Sending completed time.
+  Message ID.
 
 + `long fromUid`
 
@@ -744,17 +744,17 @@ Return Values:
 	public void BroadcastAudio(Action<long, int> callback, long fromUid, byte[] message, string attrs = "", int timeout = 0)
 	
 	//-- Sync Method
-	public int BroadcastAudio(out long mtime, long fromUid, byte[] message, string attrs = "", int timeout = 0)
+	public int BroadcastAudio(out long messageId, long fromUid, byte[] message, string attrs = "", int timeout = 0)
 
 Broadcast audio.
 
 Parameters:
 
-+ `Action<long mtime, int errorCode> callback`
++ `Action<long messageId, int errorCode> callback`
 
-+ `out long mtime`
++ `out long messageId`
 
-  Sending completed time.
+  Message ID.
 
 + `long fromUid`
 

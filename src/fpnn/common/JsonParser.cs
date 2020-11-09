@@ -18,8 +18,11 @@ namespace com.fpnn.common
             return parser.ParseObject();
         }
 
-        //-- Placeholder: Maybe implemented in futuer
-        //-- public static string ToString(object obj) { return ""; }
+        public static string ToString(object obj)
+        {
+            JsonStringify js = new JsonStringify();
+            return js.Stringify(obj);
+        }
     }
 
     //============================[ Exception ]============================//
@@ -66,7 +69,7 @@ namespace com.fpnn.common
         }
 
         static private readonly Dictionary<char, JsonParseSignDelegate> signDelegateMap;
-        static private readonly Dictionary<char, int> hexTable;
+        static private readonly Dictionary<char, ushort> hexTable;
         static private readonly HashSet<char> numericalChars;
 
         private readonly string json;
@@ -95,7 +98,7 @@ namespace com.fpnn.common
                 { '"', ProcessString },
             };
 
-            hexTable = new Dictionary<char, int>
+            hexTable = new Dictionary<char, ushort>
             {
                 { '0', 0 },
                 { '1', 1 },
@@ -363,12 +366,12 @@ namespace com.fpnn.common
                         throw new InvalidJsonException("Json Parser: content error, json truncated after '\\u'.");
 
                     idx++;
-                    long value = 0;
+                    ushort value = 0;
                     for (int i = 0; i < 4; i++)
                     {
-                        if (hexTable.TryGetValue(json[idx+i], out int v))
+                        if (hexTable.TryGetValue(json[idx+i], out ushort v))
                         {
-                            value <<= 8;
+                            value <<= 4;
                             value += v;
                         }
                         else

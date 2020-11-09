@@ -21,11 +21,6 @@ namespace com.fpnn.rtm
         public virtual void PushGroupChat(RTMMessage message) { }
         public virtual void PushRoomChat(RTMMessage message) { }
 
-        //-- Audio
-        public virtual void PushAudio(RTMMessage message) { }
-        public virtual void PushGroupAudio(RTMMessage message) { }
-        public virtual void PushRoomAudio(RTMMessage message) { }
-
         //-- Cmd
         public virtual void PushCmd(RTMMessage message) { }
         public virtual void PushGroupCmd(RTMMessage message) { }
@@ -175,7 +170,14 @@ namespace com.fpnn.rtm
 
             if (rtmMessage.messageType == (byte)MessageType.Chat)
             {
-                rtmMessage.stringMessage = quest.Want<string>("msg");
+                rtmMessage.translatedInfo = ProcessChatMessage(quest);
+                if (rtmMessage.translatedInfo != null)
+                {
+                    if (rtmMessage.translatedInfo.targetText.Length > 0)
+                        rtmMessage.stringMessage = rtmMessage.translatedInfo.targetText;
+                    else
+                        rtmMessage.stringMessage = rtmMessage.translatedInfo.sourceText;
+                }
             }
             else if (rtmMessage.messageType == (byte)MessageType.Cmd)
             {
@@ -184,6 +186,7 @@ namespace com.fpnn.rtm
             else if (rtmMessage.messageType >= 40 && rtmMessage.messageType <= 50)
             {
                 rtmMessage.stringMessage = quest.Want<string>("msg");
+                RTMServerClient.BuildFileInfo(rtmMessage, errorRecorder);
             }
             else
             {
@@ -191,13 +194,6 @@ namespace com.fpnn.rtm
                 if (messageInfo.isBinary)
                 {
                     rtmMessage.binaryMessage = messageInfo.binaryData;
-                }
-                else if (rtmMessage.messageType == (byte)MessageType.Audio)
-                {
-                    rtmMessage.audioInfo = RTMServerClient.BuildAudioInfo(messageInfo.message, errorRecorder);
-
-                    if (rtmMessage.audioInfo != null)
-                        rtmMessage.stringMessage = rtmMessage.audioInfo.recognizedText;
                 }
                 else
                     rtmMessage.stringMessage = messageInfo.message;
@@ -226,11 +222,6 @@ namespace com.fpnn.rtm
             if (rtmMessage.messageType == (byte)MessageType.Chat)
             {
                 questProcessor.PushChat(rtmMessage);
-            }
-            else if (rtmMessage.messageType == (byte)MessageType.Audio)
-            {
-                if (rtmMessage.audioInfo != null)
-                    questProcessor.PushAudio(rtmMessage);
             }
             else if (rtmMessage.messageType == (byte)MessageType.Cmd)
             {
@@ -269,11 +260,6 @@ namespace com.fpnn.rtm
                 if (rtmMessage.translatedInfo != null)
                     questProcessor.PushGroupChat(rtmMessage);
             }
-            else if (rtmMessage.messageType == (byte)MessageType.Audio)
-            {
-                if (rtmMessage.audioInfo != null)
-                    questProcessor.PushGroupAudio(rtmMessage);
-            }
             else if (rtmMessage.messageType == (byte)MessageType.Cmd)
             {
                 questProcessor.PushGroupCmd(rtmMessage);
@@ -310,11 +296,6 @@ namespace com.fpnn.rtm
             {
                 if (rtmMessage.translatedInfo != null)
                     questProcessor.PushRoomChat(rtmMessage);
-            }
-            else if (rtmMessage.messageType == (byte)MessageType.Audio)
-            {
-                if (rtmMessage.audioInfo != null)
-                    questProcessor.PushRoomAudio(rtmMessage);
             }
             else if (rtmMessage.messageType == (byte)MessageType.Cmd)
             {

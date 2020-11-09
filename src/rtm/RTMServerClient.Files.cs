@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using com.fpnn.proto;
+using com.fpnn.common;
 
 namespace com.fpnn.rtm
 {
@@ -18,12 +19,14 @@ namespace com.fpnn.rtm
             public byte[] fileContent;
             public string filename;
             public string fileExtension;
+            public string userAttrs;
             
             public string token;
             public string endpoint;
             public int remainTimeout;
             public long lastActionTimestamp;
             public Action<long, int> callback;
+            public Dictionary<string, object> rtmAttrs;
         }
 
         //===========================[ File Token ]=========================//
@@ -175,36 +178,47 @@ namespace com.fpnn.rtm
             string fileMD5 = GetMD5(info.fileContent, false);
             string sign = GetMD5(fileMD5 + ":" + info.token, false);
 
-            StringBuilder sb = new StringBuilder();
-            sb.Append("{\"sign\":\"");
-            sb.Append(sign);
-            sb.Append("\"");
+            if (info.rtmAttrs == null)
+                info.rtmAttrs = new Dictionary<string, object>();
+
+            Dictionary<string, object> rtmAttrs = info.rtmAttrs;
+            rtmAttrs.Add("sign", sign);
 
             if (info.filename != null && info.filename.Length > 0)
             {
-                sb.Append(",\"filename\":\"");
-                sb.Append(info.filename);
-                sb.Append("\"");
+                rtmAttrs.Add("filename", info.filename);
 
                 if (info.fileExtension == null || info.fileExtension.Length == 0)
-                {
                     info.fileExtension = ExtraFileExtension(info.filename);
+            }
+            if (info.fileExtension != null && info.fileExtension.Length > 0)
+                rtmAttrs.Add("ext", info.fileExtension);
+
+            Dictionary<string, object> fileAttrs = new Dictionary<string, object>();
+            fileAttrs.Add("rtm", rtmAttrs);
+
+            if (info.userAttrs == null || info.userAttrs.Length == 0)
+                fileAttrs.Add("custom", "");
+            else
+            {
+                try
+                {
+                    Dictionary<string, object> userDict = Json.ParseObject(info.userAttrs);
+                    if (userDict != null)
+                        fileAttrs.Add("custom", userDict);
+                    else
+                        fileAttrs.Add("custom", info.userAttrs);
+                }
+                catch (JsonException)
+                {
+                    fileAttrs.Add("custom", info.userAttrs);
                 }
             }
 
-            if (info.fileExtension != null && info.fileExtension.Length > 0)
-            {
-                sb.Append(",\"ext\":\"");
-                sb.Append(info.fileExtension);
-                sb.Append("\"");
-            }
-
-            sb.Append("}");
-
-            return sb.ToString();
+            return Json.ToString(fileAttrs);
         }
 
-        private Quest BuildSendFileQuest(SendFileInfo info)
+        private Quest BuildSendFileQuest(out long mid, SendFileInfo info)
         {
             Quest quest = null;
             switch (info.actionType)
@@ -236,7 +250,8 @@ namespace com.fpnn.rtm
             quest.Param("from", info.from);
             quest.Param("token", info.token);
             quest.Param("mtype", info.mtype);
-            quest.Param("mid", MidGenerator.Gen());
+            mid = MidGenerator.Gen();
+            quest.Param("mid", mid);
 
             quest.Param("file", info.fileContent);
             quest.Param("attrs", BuildFileAttrs(info));
@@ -250,15 +265,15 @@ namespace com.fpnn.rtm
             if (info.remainTimeout <= 0)
                 return fpnn.ErrorCode.FPNN_EC_CORE_TIMEOUT;
 
-            Quest quest = BuildSendFileQuest(info);
+            long mid;
+            Quest quest = BuildSendFileQuest(out mid, info);
             bool success = client.SendQuest(quest, (Answer answer, int errorCode) => {
 
                 if (errorCode == fpnn.ErrorCode.FPNN_EC_OK)
                 {
                     try
                     {
-                        long mtime = answer.Want<long>("mtime");
-                        info.callback(mtime, fpnn.ErrorCode.FPNN_EC_OK);
+                        info.callback(mid, fpnn.ErrorCode.FPNN_EC_OK);
 
                         ActiveFileGateClient(info.endpoint, client);
                         return;
@@ -346,8 +361,18 @@ namespace com.fpnn.rtm
         }
 
         //===========================[ Real Send File ]=========================//
-        private void RealSendFile(Action<long, int> callback, FileTokenType tokenType, long fromUid, long targetId, HashSet<long> targetIds, byte mtype, byte[] fileContent, string filename, string fileExtension = "", int timeout = 120)
+        private void RealSendFile(Action<long, int> callback, FileTokenType tokenType, long fromUid, long targetId, HashSet<long> targetIds, byte mtype, byte[] fileContent, string filename, string fileExtension = "", string attrs = "", Dictionary<string, object> rtmAttrs = null, int timeout = 120)
         {
+
+            if (mtype < 40 || mtype > 50)
+            {
+                if (errorRecorder != null)
+                    errorRecorder.RecordError("Send file require mtype between [40, 50], current mtype is " + mtype);
+
+                callback(0, RTMErrorCode.RTM_EC_INVALID_MTYPE);
+                return;
+            }
+
             SendFileInfo info = new SendFileInfo
             {
                 from = fromUid,
@@ -374,9 +399,17 @@ namespace com.fpnn.rtm
             }
         }
 
-        private int RealSendFile(out long mtime, FileTokenType tokenType, long fromUid, long targetId, HashSet<long> targetIds, byte mtype, byte[] fileContent, string filename, string fileExtension = "", int timeout = 120)
+        private int RealSendFile(out long messageId, FileTokenType tokenType, long fromUid, long targetId, HashSet<long> targetIds, byte mtype, byte[] fileContent, string filename, string fileExtension = "", string attrs = "", Dictionary<string, object> rtmAttrs = null, int timeout = 120)
         {
-            mtime = 0;
+            messageId = 0;
+
+            if (mtype < 40 || mtype > 50)
+            {
+                if (errorRecorder != null)
+                    errorRecorder.RecordError("Send file require mtype between [40, 50], current mtype is " + mtype);
+
+                return RTMErrorCode.RTM_EC_INVALID_MTYPE;
+            }
 
             long lastActionTimestamp = ClientEngine.GetCurrentMilliseconds();
             int errorCode = fpnn.ErrorCode.FPNN_EC_OK;
@@ -443,10 +476,12 @@ namespace com.fpnn.rtm
                 fileContent = fileContent,
                 filename = filename,
                 fileExtension = fileExtension,
+                userAttrs = attrs,
                 token = token,
             };
+            info.rtmAttrs = rtmAttrs;
 
-            Quest quest = BuildSendFileQuest(info);
+            Quest quest = BuildSendFileQuest(out messageId, info);
             Answer answer = fileClient.SendQuest(quest, timeout);
 
             if (answer.IsException())
@@ -454,58 +489,57 @@ namespace com.fpnn.rtm
 
             ActiveFileGateClient(endpoint, fileClient);
 
-            mtime = answer.Want<long>("mtime");
             return fpnn.ErrorCode.FPNN_EC_OK;
         }
 
-        public void SendFile(Action<long, int> callback, long fromUid, long peerUid, MessageType type, byte[] fileContent, string filename, string fileExtension = "", int timeout = 120)
+        public void SendFile(Action<long, int> callback, long fromUid, long peerUid, MessageType type, byte[] fileContent, string filename, string fileExtension = "", string attrs = "", int timeout = 120)
         {
-            RealSendFile(callback, FileTokenType.P2P, fromUid, peerUid, null, (byte)type, fileContent, filename, fileExtension, timeout);
+            RealSendFile(callback, FileTokenType.P2P, fromUid, peerUid, null, (byte)type, fileContent, filename, fileExtension, attrs, null, timeout);
         }
 
-        public int SendFile(out long mtime, long fromUid, long peerUid, MessageType type, byte[] fileContent, string filename, string fileExtension = "", int timeout = 120)
+        public int SendFile(out long messageId, long fromUid, long peerUid, MessageType type, byte[] fileContent, string filename, string fileExtension = "", string attrs = "", int timeout = 120)
         {
-            return RealSendFile(out mtime, FileTokenType.P2P, fromUid, peerUid, null, (byte)type, fileContent, filename, fileExtension, timeout);
+            return RealSendFile(out messageId, FileTokenType.P2P, fromUid, peerUid, null, (byte)type, fileContent, filename, fileExtension, attrs, null, timeout);
         }
 
-        public void SendFiles(Action<long, int> callback, long fromUid, HashSet<long> peerUids, MessageType type, byte[] fileContent, string filename, string fileExtension = "", int timeout = 120)
+        public void SendFiles(Action<long, int> callback, long fromUid, HashSet<long> peerUids, MessageType type, byte[] fileContent, string filename, string fileExtension = "", string attrs = "", int timeout = 120)
         {
-            RealSendFile(callback, FileTokenType.Multi, fromUid, 0, peerUids, (byte)type, fileContent, filename, fileExtension, timeout);
+            RealSendFile(callback, FileTokenType.Multi, fromUid, 0, peerUids, (byte)type, fileContent, filename, fileExtension, attrs, null, timeout);
         }
 
-        public int SendFiles(out long mtime, long fromUid, HashSet<long> peerUids, MessageType type, byte[] fileContent, string filename, string fileExtension = "", int timeout = 120)
+        public int SendFiles(out long messageId, long fromUid, HashSet<long> peerUids, MessageType type, byte[] fileContent, string filename, string fileExtension = "", string attrs = "", int timeout = 120)
         {
-            return RealSendFile(out mtime, FileTokenType.Multi, fromUid, 0, peerUids, (byte)type, fileContent, filename, fileExtension, timeout);
+            return RealSendFile(out messageId, FileTokenType.Multi, fromUid, 0, peerUids, (byte)type, fileContent, filename, fileExtension, attrs, null, timeout);
         }
 
-        public void SendGroupFile(Action<long, int> callback, long fromUid, long groupId, MessageType type, byte[] fileContent, string filename, string fileExtension = "", int timeout = 120)
+        public void SendGroupFile(Action<long, int> callback, long fromUid, long groupId, MessageType type, byte[] fileContent, string filename, string fileExtension = "", string attrs = "", int timeout = 120)
         {
-            RealSendFile(callback, FileTokenType.Group, fromUid, groupId, null, (byte)type, fileContent, filename, fileExtension, timeout);
+            RealSendFile(callback, FileTokenType.Group, fromUid, groupId, null, (byte)type, fileContent, filename, fileExtension, attrs, null, timeout);
         }
 
-        public int SendGroupFile(out long mtime, long fromUid, long groupId, MessageType type, byte[] fileContent, string filename, string fileExtension = "", int timeout = 120)
+        public int SendGroupFile(out long messageId, long fromUid, long groupId, MessageType type, byte[] fileContent, string filename, string fileExtension = "", string attrs = "", int timeout = 120)
         {
-            return RealSendFile(out mtime, FileTokenType.Group, fromUid, groupId, null, (byte)type, fileContent, filename, fileExtension, timeout);
+            return RealSendFile(out messageId, FileTokenType.Group, fromUid, groupId, null, (byte)type, fileContent, filename, fileExtension, attrs, null, timeout);
         }
 
-        public void SendRoomFile(Action<long, int> callback, long fromUid, long roomId, MessageType type, byte[] fileContent, string filename, string fileExtension = "", int timeout = 120)
+        public void SendRoomFile(Action<long, int> callback, long fromUid, long roomId, MessageType type, byte[] fileContent, string filename, string fileExtension = "", string attrs = "", int timeout = 120)
         {
-            RealSendFile(callback, FileTokenType.Room, fromUid, roomId, null, (byte)type, fileContent, filename, fileExtension, timeout);
+            RealSendFile(callback, FileTokenType.Room, fromUid, roomId, null, (byte)type, fileContent, filename, fileExtension, attrs, null, timeout);
         }
 
-        public int SendRoomFile(out long mtime, long fromUid, long roomId, MessageType type, byte[] fileContent, string filename, string fileExtension = "", int timeout = 120)
+        public int SendRoomFile(out long messageId, long fromUid, long roomId, MessageType type, byte[] fileContent, string filename, string fileExtension = "", string attrs = "", int timeout = 120)
         {
-            return RealSendFile(out mtime, FileTokenType.Room, fromUid, roomId, null, (byte)type, fileContent, filename, fileExtension, timeout);
+            return RealSendFile(out messageId, FileTokenType.Room, fromUid, roomId, null, (byte)type, fileContent, filename, fileExtension, attrs, null, timeout);
         }
 
-        public void BroadcastFile(Action<long, int> callback, long fromUid, MessageType type, byte[] fileContent, string filename, string fileExtension = "", int timeout = 120)
+        public void BroadcastFile(Action<long, int> callback, long fromUid, MessageType type, byte[] fileContent, string filename, string fileExtension = "", string attrs = "", int timeout = 120)
         {
-            RealSendFile(callback, FileTokenType.Broadcast, fromUid, 0, null, (byte)type, fileContent, filename, fileExtension, timeout);
+            RealSendFile(callback, FileTokenType.Broadcast, fromUid, 0, null, (byte)type, fileContent, filename, fileExtension, attrs, null, timeout);
         }
 
-        public int BroadcastFile(out long mtime, long fromUid, MessageType type, byte[] fileContent, string filename, string fileExtension = "", int timeout = 120)
+        public int BroadcastFile(out long messageId, long fromUid, MessageType type, byte[] fileContent, string filename, string fileExtension = "", string attrs = "", int timeout = 120)
         {
-            return RealSendFile(out mtime, FileTokenType.Broadcast, fromUid, 0, null, (byte)type, fileContent, filename, fileExtension, timeout);
+            return RealSendFile(out messageId, FileTokenType.Broadcast, fromUid, 0, null, (byte)type, fileContent, filename, fileExtension, attrs, null, timeout);
         }
     }
 }

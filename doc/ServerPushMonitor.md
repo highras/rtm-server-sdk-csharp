@@ -21,11 +21,6 @@
         public override void PushGroupChat(RTMMessage message) { }
         public override void PushRoomChat(RTMMessage message) { }
     
-        //-- Audio
-        public override void PushAudio(RTMMessage message) { }
-        public override void PushGroupAudio(RTMMessage message) { }
-        public override void PushRoomAudio(RTMMessage message) { }
-    
         //-- Cmd
         public override void PushCmd(RTMMessage message) { }
         public override void PushGroupCmd(RTMMessage message) { }

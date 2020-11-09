@@ -11,18 +11,18 @@
 	public void SendMessage(Action<long, int> callback, long fromUid, long toUid, byte mtype, byte[] message, string attrs = "", int timeout = 0)
 	
 	//-- Sync Method
-	public int SendMessage(out long mtime, long fromUid, long toUid, byte mtype, string message, string attrs = "", int timeout = 0)
-	public int SendMessage(out long mtime, long fromUid, long toUid, byte mtype, byte[] message, string attrs = "", int timeout = 0)
+	public int SendMessage(out long messageId, long fromUid, long toUid, byte mtype, string message, string attrs = "", int timeout = 0)
+	public int SendMessage(out long messageId, long fromUid, long toUid, byte mtype, byte[] message, string attrs = "", int timeout = 0)
 
 Send P2P message.
 
 Parameters:
 
-+ `Action<long mtime, int errorCode> callback`
++ `Action<long messageId, int errorCode> callback`
 
-+ `out long mtime`
++ `out long messageId`
 
-	Sending completed time.
+	Message ID.
 
 + `long fromUid`
 
@@ -74,18 +74,18 @@ Return Values:
 	public void SendMessages(Action<long, int> callback, long fromUid, HashSet<long> toUids, byte mtype, byte[] message, string attrs = "", int timeout = 0)
 	
 	//-- Sync Method
-	public int SendMessages(out long mtime, long fromUid, HashSet<long> toUids, byte mtype, string message, string attrs = "", int timeout = 0)
-	public int SendMessages(out long mtime, long fromUid, HashSet<long> toUids, byte mtype, byte[] message, string attrs = "", int timeout = 0)
+	public int SendMessages(out long messageId, long fromUid, HashSet<long> toUids, byte mtype, string message, string attrs = "", int timeout = 0)
+	public int SendMessages(out long messageId, long fromUid, HashSet<long> toUids, byte mtype, byte[] message, string attrs = "", int timeout = 0)
 
 Send Multiple P2P  Message.
 
 Parameters:
 
-+ `Action<long mtime, int errorCode> callback`
++ `Action<long messageId, int errorCode> callback`
 
-+ `out long mtime`
++ `out long messageId`
 
-  Sending completed time.
+  Message ID.
 
 + `long fromUid`
 
@@ -129,18 +129,18 @@ Return Values:
 	public void SendGroupMessage(Action<long, int> callback, long fromUid, long groupId, byte mtype, byte[] message, string attrs = "", int timeout = 0)
 	
 	//-- Sync Method
-	public int SendGroupMessage(out long mtime, long fromUid, long groupId, byte mtype, string message, string attrs = "", int timeout = 0)
-	public int SendGroupMessage(out long mtime, long fromUid, long groupId, byte mtype, byte[] message, string attrs = "", int timeout = 0)
+	public int SendGroupMessage(out long messageId, long fromUid, long groupId, byte mtype, string message, string attrs = "", int timeout = 0)
+	public int SendGroupMessage(out long messageId, long fromUid, long groupId, byte mtype, byte[] message, string attrs = "", int timeout = 0)
 
 Send message in group.
 
 Parameters:
 
-+ `Action<long mtime, int errorCode> callback`
++ `Action<long messageId, int errorCode> callback`
 
-+ `out long mtime`
++ `out long messageId`
 
-	Sending completed time.
+	Message ID.
 
 + `long groupId`
 
@@ -187,18 +187,18 @@ Return Values:
 	public void SendRoomMessage(Action<long, int> callback, long fromUid, long roomId, byte mtype, byte[] message, string attrs = "", int timeout = 0)
 	
 	//-- Sync Method
-	public int SendRoomMessage(out long mtime, long fromUid, long roomId, byte mtype, string message, string attrs = "", int timeout = 0)
-	public int SendRoomMessage(out long mtime, long fromUid, long roomId, byte mtype, byte[] message, string attrs = "", int timeout = 0)
+	public int SendRoomMessage(out long messageId, long fromUid, long roomId, byte mtype, string message, string attrs = "", int timeout = 0)
+	public int SendRoomMessage(out long messageId, long fromUid, long roomId, byte mtype, byte[] message, string attrs = "", int timeout = 0)
 
 Send message in room.
 
 Parameters:
 
-+ ``Action<long mtime, int errorCode> callback`
++ ``Action<long messageId, int errorCode> callback`
 
-+ `out long mtime`
++ `out long messageId`
 
-	Sending completed time.
+	Message ID.
 
 + `long roomId`
 
@@ -246,18 +246,18 @@ Return Values:
 	public void BroadcastMessage(Action<long, int> callback, long fromUid, byte mtype, byte[] message, string attrs = "", int timeout = 0)
 	
 	//-- Sync Method
-	public int BroadcastMessage(out long mtime, long fromUid, byte mtype, string message, string attrs = "", int timeout = 0)
-	public int BroadcastMessage(out long mtime, long fromUid, byte mtype, byte[] message, string attrs = "", int timeout = 0)
+	public int BroadcastMessage(out long messageId, long fromUid, byte mtype, string message, string attrs = "", int timeout = 0)
+	public int BroadcastMessage(out long messageId, long fromUid, byte mtype, byte[] message, string attrs = "", int timeout = 0)
 
 Broadcast text chat.
 
 Parameters:
 
-+ `Action<long mtime, int errorCode> callback`
++ `Action<long messageId, int errorCode> callback`
 
-+ `out long mtime`
++ `out long messageId`
 
-  Sending completed time.
+  Message ID.
 
 + `long fromUid`
 

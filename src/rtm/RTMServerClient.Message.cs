@@ -16,20 +16,19 @@ namespace com.fpnn.rtm
             quest.Param("msg", message);
             quest.Param("attrs", attrs);
 
-            long mid = MidGenerator.Gen();
-            quest.Param("mid", mid);
+            long messageId = MidGenerator.Gen();
+            quest.Param("mid", messageId);
 
             bool status = client.SendQuest(quest, (Answer answer, int errorCode) => { 
-                long mtime = 0;
                 if (errorCode == fpnn.ErrorCode.FPNN_EC_OK)
                 {
                     try { 
-                        mtime = answer.Get<long>("mtime", 0); 
+                        long mtime = answer.Get<long>("mtime", 0); 
                     } catch (Exception) {
                         errorCode = fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
                     }
                 }
-                callback(mtime, errorCode);
+                callback(messageId, errorCode);
             }, timeout);
 
             if (!status)
@@ -39,10 +38,8 @@ namespace com.fpnn.rtm
                 });
         }
 
-        public int SendMessage(out long mtime, long fromUid, long toUid, byte mtype, string message, string attrs = "", int timeout = 0)
+        public int SendMessage(out long messageId, long fromUid, long toUid, byte mtype, string message, string attrs = "", int timeout = 0)
         {
-            mtime = 0;
-
             Quest quest = GenerateQuest("sendmsg");
             quest.Param("mtype", mtype);
             quest.Param("from", fromUid);
@@ -50,8 +47,8 @@ namespace com.fpnn.rtm
             quest.Param("msg", message);
             quest.Param("attrs", attrs);
 
-            long mid = MidGenerator.Gen();
-            quest.Param("mid", mid);
+            messageId = MidGenerator.Gen();
+            quest.Param("mid", messageId);
 
             Answer answer = client.SendQuest(quest, timeout);
             if (answer.IsException())
@@ -59,7 +56,7 @@ namespace com.fpnn.rtm
 
             try
             {
-                mtime = answer.Get<long>("mtime", 0);
+                long mtime = answer.Get<long>("mtime", 0);
                 return fpnn.ErrorCode.FPNN_EC_OK;
             } catch (Exception) {
                 return fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
@@ -75,20 +72,19 @@ namespace com.fpnn.rtm
             quest.Param("msg", message);
             quest.Param("attrs", attrs);
 
-            long mid = MidGenerator.Gen();
-            quest.Param("mid", mid);
+            long messageId = MidGenerator.Gen();
+            quest.Param("mid", messageId);
 
             bool status = client.SendQuest(quest, (Answer answer, int errorCode) => { 
-                long mtime = 0;
                 if (errorCode == fpnn.ErrorCode.FPNN_EC_OK)
                 {
                     try { 
-                        mtime = answer.Get<long>("mtime", 0); 
+                        long mtime = answer.Get<long>("mtime", 0); 
                     } catch (Exception) {
                         errorCode = fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
                     }
                 }
-                callback(mtime, errorCode);
+                callback(messageId, errorCode);
             }, timeout);
 
             if (!status)
@@ -98,10 +94,8 @@ namespace com.fpnn.rtm
                 });
         }
 
-        public int SendMessage(out long mtime, long fromUid, long toUid, byte mtype, byte[] message, string attrs = "", int timeout = 0)
+        public int SendMessage(out long messageId, long fromUid, long toUid, byte mtype, byte[] message, string attrs = "", int timeout = 0)
         {
-            mtime = 0;
-
             Quest quest = GenerateQuest("sendmsg");
             quest.Param("mtype", mtype);
             quest.Param("from", fromUid);
@@ -109,8 +103,8 @@ namespace com.fpnn.rtm
             quest.Param("msg", message);
             quest.Param("attrs", attrs);
 
-            long mid = MidGenerator.Gen();
-            quest.Param("mid", mid);
+            messageId = MidGenerator.Gen();
+            quest.Param("mid", messageId);
 
             Answer answer = client.SendQuest(quest, timeout);
             if (answer.IsException())
@@ -118,7 +112,7 @@ namespace com.fpnn.rtm
 
             try
             {
-                mtime = answer.Get<long>("mtime", 0);
+                long mtime = answer.Get<long>("mtime", 0);
                 return fpnn.ErrorCode.FPNN_EC_OK;
             } catch (Exception) {
                 return fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
@@ -134,20 +128,19 @@ namespace com.fpnn.rtm
             quest.Param("msg", message);
             quest.Param("attrs", attrs);
 
-            long mid = MidGenerator.Gen();
-            quest.Param("mid", mid);
+            long messageId = MidGenerator.Gen();
+            quest.Param("mid", messageId);
 
             bool status = client.SendQuest(quest, (Answer answer, int errorCode) => { 
-                long mtime = 0;
                 if (errorCode == fpnn.ErrorCode.FPNN_EC_OK)
                 {
                     try { 
-                        mtime = answer.Get<long>("mtime", 0); 
+                        long mtime = answer.Get<long>("mtime", 0); 
                     } catch (Exception) {
                         errorCode = fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
                     }
                 }
-                callback(mtime, errorCode);
+                callback(messageId, errorCode);
             }, timeout);
 
             if (!status)
@@ -157,10 +150,8 @@ namespace com.fpnn.rtm
                 });
         }
 
-        public int SendMessages(out long mtime, long fromUid, HashSet<long> toUids, byte mtype, string message, string attrs = "", int timeout = 0)
+        public int SendMessages(out long messageId, long fromUid, HashSet<long> toUids, byte mtype, string message, string attrs = "", int timeout = 0)
         {
-            mtime = 0;
-
             Quest quest = GenerateQuest("sendmsgs");
             quest.Param("mtype", mtype);
             quest.Param("from", fromUid);
@@ -168,8 +159,8 @@ namespace com.fpnn.rtm
             quest.Param("msg", message);
             quest.Param("attrs", attrs);
 
-            long mid = MidGenerator.Gen();
-            quest.Param("mid", mid);
+            messageId = MidGenerator.Gen();
+            quest.Param("mid", messageId);
 
             Answer answer = client.SendQuest(quest, timeout);
             if (answer.IsException())
@@ -177,7 +168,7 @@ namespace com.fpnn.rtm
 
             try
             {
-                mtime = answer.Get<long>("mtime", 0);
+                long mtime = answer.Get<long>("mtime", 0);
                 return fpnn.ErrorCode.FPNN_EC_OK;
             } catch (Exception) {
                 return fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
@@ -193,20 +184,19 @@ namespace com.fpnn.rtm
             quest.Param("msg", message);
             quest.Param("attrs", attrs);
 
-            long mid = MidGenerator.Gen();
-            quest.Param("mid", mid);
+            long messageId = MidGenerator.Gen();
+            quest.Param("mid", messageId);
 
             bool status = client.SendQuest(quest, (Answer answer, int errorCode) => { 
-                long mtime = 0;
                 if (errorCode == fpnn.ErrorCode.FPNN_EC_OK)
                 {
                     try { 
-                        mtime = answer.Get<long>("mtime", 0); 
+                        long mtime = answer.Get<long>("mtime", 0); 
                     } catch (Exception) {
                         errorCode = fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
                     }
                 }
-                callback(mtime, errorCode);
+                callback(messageId, errorCode);
             }, timeout);
 
             if (!status)
@@ -216,10 +206,8 @@ namespace com.fpnn.rtm
                 });
         }
 
-        public int SendMessages(out long mtime, long fromUid, HashSet<long> toUids, byte mtype, byte[] message, string attrs = "", int timeout = 0)
+        public int SendMessages(out long messageId, long fromUid, HashSet<long> toUids, byte mtype, byte[] message, string attrs = "", int timeout = 0)
         {
-            mtime = 0;
-
             Quest quest = GenerateQuest("sendmsgs");
             quest.Param("mtype", mtype);
             quest.Param("from", fromUid);
@@ -227,8 +215,8 @@ namespace com.fpnn.rtm
             quest.Param("msg", message);
             quest.Param("attrs", attrs);
 
-            long mid = MidGenerator.Gen();
-            quest.Param("mid", mid);
+            messageId = MidGenerator.Gen();
+            quest.Param("mid", messageId);
 
             Answer answer = client.SendQuest(quest, timeout);
             if (answer.IsException())
@@ -236,7 +224,7 @@ namespace com.fpnn.rtm
 
             try
             {
-                mtime = answer.Get<long>("mtime", 0);
+                long mtime = answer.Get<long>("mtime", 0);
                 return fpnn.ErrorCode.FPNN_EC_OK;
             } catch (Exception) {
                 return fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
@@ -252,20 +240,19 @@ namespace com.fpnn.rtm
             quest.Param("msg", message);
             quest.Param("attrs", attrs);
 
-            long mid = MidGenerator.Gen();
-            quest.Param("mid", mid);
+            long messageId = MidGenerator.Gen();
+            quest.Param("mid", messageId);
 
             bool status = client.SendQuest(quest, (Answer answer, int errorCode) => { 
-                long mtime = 0;
                 if (errorCode == fpnn.ErrorCode.FPNN_EC_OK)
                 {
                     try { 
-                        mtime = answer.Get<long>("mtime", 0); 
+                        long mtime = answer.Get<long>("mtime", 0); 
                     } catch (Exception) {
                         errorCode = fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
                     }
                 }
-                callback(mtime, errorCode);
+                callback(messageId, errorCode);
             }, timeout);
 
             if (!status)
@@ -275,10 +262,8 @@ namespace com.fpnn.rtm
                 });
         }
 
-        public int SendGroupMessage(out long mtime, long fromUid, long groupId, byte mtype, string message, string attrs = "", int timeout = 0)
+        public int SendGroupMessage(out long messageId, long fromUid, long groupId, byte mtype, string message, string attrs = "", int timeout = 0)
         {
-            mtime = 0;
-
             Quest quest = GenerateQuest("sendgroupmsg");
             quest.Param("mtype", mtype);
             quest.Param("from", fromUid);
@@ -286,8 +271,8 @@ namespace com.fpnn.rtm
             quest.Param("msg", message);
             quest.Param("attrs", attrs);
 
-            long mid = MidGenerator.Gen();
-            quest.Param("mid", mid);
+            messageId = MidGenerator.Gen();
+            quest.Param("mid", messageId);
 
             Answer answer = client.SendQuest(quest, timeout);
             if (answer.IsException())
@@ -295,7 +280,7 @@ namespace com.fpnn.rtm
 
             try
             {
-                mtime = answer.Get<long>("mtime", 0);
+                long mtime = answer.Get<long>("mtime", 0);
                 return fpnn.ErrorCode.FPNN_EC_OK;
             } catch (Exception) {
                 return fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
@@ -311,20 +296,19 @@ namespace com.fpnn.rtm
             quest.Param("msg", message);
             quest.Param("attrs", attrs);
 
-            long mid = MidGenerator.Gen();
-            quest.Param("mid", mid);
+            long messageId = MidGenerator.Gen();
+            quest.Param("mid", messageId);
 
             bool status = client.SendQuest(quest, (Answer answer, int errorCode) => { 
-                long mtime = 0;
                 if (errorCode == fpnn.ErrorCode.FPNN_EC_OK)
                 {
                     try { 
-                        mtime = answer.Get<long>("mtime", 0); 
+                        long mtime = answer.Get<long>("mtime", 0); 
                     } catch (Exception) {
                         errorCode = fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
                     }
                 }
-                callback(mtime, errorCode);
+                callback(messageId, errorCode);
             }, timeout);
 
             if (!status)
@@ -334,10 +318,8 @@ namespace com.fpnn.rtm
                 });
         }
 
-        public int SendGroupMessage(out long mtime, long fromUid, long groupId, byte mtype, byte[] message, string attrs = "", int timeout = 0)
+        public int SendGroupMessage(out long messageId, long fromUid, long groupId, byte mtype, byte[] message, string attrs = "", int timeout = 0)
         {
-            mtime = 0;
-
             Quest quest = GenerateQuest("sendgroupmsg");
             quest.Param("mtype", mtype);
             quest.Param("from", fromUid);
@@ -345,8 +327,8 @@ namespace com.fpnn.rtm
             quest.Param("msg", message);
             quest.Param("attrs", attrs);
 
-            long mid = MidGenerator.Gen();
-            quest.Param("mid", mid);
+            messageId = MidGenerator.Gen();
+            quest.Param("mid", messageId);
 
             Answer answer = client.SendQuest(quest, timeout);
             if (answer.IsException())
@@ -354,7 +336,7 @@ namespace com.fpnn.rtm
 
             try
             {
-                mtime = answer.Get<long>("mtime", 0);
+                long mtime = answer.Get<long>("mtime", 0);
                 return fpnn.ErrorCode.FPNN_EC_OK;
             } catch (Exception) {
                 return fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
@@ -370,20 +352,19 @@ namespace com.fpnn.rtm
             quest.Param("msg", message);
             quest.Param("attrs", attrs);
 
-            long mid = MidGenerator.Gen();
-            quest.Param("mid", mid);
+            long messageId = MidGenerator.Gen();
+            quest.Param("mid", messageId);
 
             bool status = client.SendQuest(quest, (Answer answer, int errorCode) => { 
-                long mtime = 0;
                 if (errorCode == fpnn.ErrorCode.FPNN_EC_OK)
                 {
                     try { 
-                        mtime = answer.Get<long>("mtime", 0); 
+                        long mtime = answer.Get<long>("mtime", 0); 
                     } catch (Exception) {
                         errorCode = fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
                     }
                 }
-                callback(mtime, errorCode);
+                callback(messageId, errorCode);
             }, timeout);
 
             if (!status)
@@ -393,10 +374,8 @@ namespace com.fpnn.rtm
                 });
         }
 
-        public int SendRoomMessage(out long mtime, long fromUid, long roomId, byte mtype, string message, string attrs = "", int timeout = 0)
+        public int SendRoomMessage(out long messageId, long fromUid, long roomId, byte mtype, string message, string attrs = "", int timeout = 0)
         {
-            mtime = 0;
-
             Quest quest = GenerateQuest("sendroommsg");
             quest.Param("mtype", mtype);
             quest.Param("from", fromUid);
@@ -404,8 +383,8 @@ namespace com.fpnn.rtm
             quest.Param("msg", message);
             quest.Param("attrs", attrs);
 
-            long mid = MidGenerator.Gen();
-            quest.Param("mid", mid);
+            messageId = MidGenerator.Gen();
+            quest.Param("mid", messageId);
 
             Answer answer = client.SendQuest(quest, timeout);
             if (answer.IsException())
@@ -413,7 +392,7 @@ namespace com.fpnn.rtm
 
             try
             {
-                mtime = answer.Get<long>("mtime", 0);
+                long mtime = answer.Get<long>("mtime", 0);
                 return fpnn.ErrorCode.FPNN_EC_OK;
             } catch (Exception) {
                 return fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
@@ -429,20 +408,19 @@ namespace com.fpnn.rtm
             quest.Param("msg", message);
             quest.Param("attrs", attrs);
 
-            long mid = MidGenerator.Gen();
-            quest.Param("mid", mid);
+            long messageId = MidGenerator.Gen();
+            quest.Param("mid", messageId);
 
             bool status = client.SendQuest(quest, (Answer answer, int errorCode) => { 
-                long mtime = 0;
                 if (errorCode == fpnn.ErrorCode.FPNN_EC_OK)
                 {
                     try { 
-                        mtime = answer.Get<long>("mtime", 0); 
+                        long mtime = answer.Get<long>("mtime", 0); 
                     } catch (Exception) {
                         errorCode = fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
                     }
                 }
-                callback(mtime, errorCode);
+                callback(messageId, errorCode);
             }, timeout);
 
             if (!status)
@@ -452,10 +430,8 @@ namespace com.fpnn.rtm
                 });
         }
 
-        public int SendRoomMessage(out long mtime, long fromUid, long roomId, byte mtype, byte[] message, string attrs = "", int timeout = 0)
+        public int SendRoomMessage(out long messageId, long fromUid, long roomId, byte mtype, byte[] message, string attrs = "", int timeout = 0)
         {
-            mtime = 0;
-
             Quest quest = GenerateQuest("sendroommsg");
             quest.Param("mtype", mtype);
             quest.Param("from", fromUid);
@@ -463,8 +439,8 @@ namespace com.fpnn.rtm
             quest.Param("msg", message);
             quest.Param("attrs", attrs);
 
-            long mid = MidGenerator.Gen();
-            quest.Param("mid", mid);
+            messageId = MidGenerator.Gen();
+            quest.Param("mid", messageId);
 
             Answer answer = client.SendQuest(quest, timeout);
             if (answer.IsException())
@@ -472,7 +448,7 @@ namespace com.fpnn.rtm
 
             try
             {
-                mtime = answer.Get<long>("mtime", 0);
+                long mtime = answer.Get<long>("mtime", 0);
                 return fpnn.ErrorCode.FPNN_EC_OK;
             } catch (Exception) {
                 return fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
@@ -487,20 +463,19 @@ namespace com.fpnn.rtm
             quest.Param("msg", message);
             quest.Param("attrs", attrs);
 
-            long mid = MidGenerator.Gen();
-            quest.Param("mid", mid);
+            long messageId = MidGenerator.Gen();
+            quest.Param("mid", messageId);
 
             bool status = client.SendQuest(quest, (Answer answer, int errorCode) => { 
-                long mtime = 0;
                 if (errorCode == fpnn.ErrorCode.FPNN_EC_OK)
                 {
                     try { 
-                        mtime = answer.Get<long>("mtime", 0); 
+                        long mtime = answer.Get<long>("mtime", 0); 
                     } catch (Exception) {
                         errorCode = fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
                     }
                 }
-                callback(mtime, errorCode);
+                callback(messageId, errorCode);
             }, timeout);
 
             if (!status)
@@ -510,18 +485,16 @@ namespace com.fpnn.rtm
                 });
         }
 
-        public int BroadcastMessage(out long mtime, long fromUid, byte mtype, string message, string attrs = "", int timeout = 0)
+        public int BroadcastMessage(out long messageId, long fromUid, byte mtype, string message, string attrs = "", int timeout = 0)
         {
-            mtime = 0;
-
             Quest quest = GenerateQuest("broadcastmsg");
             quest.Param("mtype", mtype);
             quest.Param("from", fromUid);
             quest.Param("msg", message);
             quest.Param("attrs", attrs);
 
-            long mid = MidGenerator.Gen();
-            quest.Param("mid", mid);
+            messageId = MidGenerator.Gen();
+            quest.Param("mid", messageId);
 
             Answer answer = client.SendQuest(quest, timeout);
             if (answer.IsException())
@@ -529,7 +502,7 @@ namespace com.fpnn.rtm
 
             try
             {
-                mtime = answer.Get<long>("mtime", 0);
+                long mtime = answer.Get<long>("mtime", 0);
                 return fpnn.ErrorCode.FPNN_EC_OK;
             } catch (Exception) {
                 return fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
@@ -544,20 +517,19 @@ namespace com.fpnn.rtm
             quest.Param("msg", message);
             quest.Param("attrs", attrs);
 
-            long mid = MidGenerator.Gen();
-            quest.Param("mid", mid);
+            long messageId = MidGenerator.Gen();
+            quest.Param("mid", messageId);
 
             bool status = client.SendQuest(quest, (Answer answer, int errorCode) => { 
-                long mtime = 0;
                 if (errorCode == fpnn.ErrorCode.FPNN_EC_OK)
                 {
                     try { 
-                        mtime = answer.Get<long>("mtime", 0); 
+                        long mtime = answer.Get<long>("mtime", 0); 
                     } catch (Exception) {
                         errorCode = fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
                     }
                 }
-                callback(mtime, errorCode);
+                callback(messageId, errorCode);
             }, timeout);
 
             if (!status)
@@ -567,18 +539,16 @@ namespace com.fpnn.rtm
                 });
         }
 
-        public int BroadcastMessage(out long mtime, long fromUid, byte mtype, byte[] message, string attrs = "", int timeout = 0)
+        public int BroadcastMessage(out long messageId, long fromUid, byte mtype, byte[] message, string attrs = "", int timeout = 0)
         {
-            mtime = 0;
-
             Quest quest = GenerateQuest("broadcastmsg");
             quest.Param("mtype", mtype);
             quest.Param("from", fromUid);
             quest.Param("msg", message);
             quest.Param("attrs", attrs);
 
-            long mid = MidGenerator.Gen();
-            quest.Param("mid", mid);
+            messageId = MidGenerator.Gen();
+            quest.Param("mid", messageId);
 
             Answer answer = client.SendQuest(quest, timeout);
             if (answer.IsException())
@@ -586,7 +556,7 @@ namespace com.fpnn.rtm
 
             try
             {
-                mtime = answer.Get<long>("mtime", 0);
+                long mtime = answer.Get<long>("mtime", 0);
                 return fpnn.ErrorCode.FPNN_EC_OK;
             } catch (Exception) {
                 return fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
@@ -617,28 +587,16 @@ namespace com.fpnn.rtm
                 message.messageType = (byte)Convert.ChangeType(items[2], TypeCode.Byte);
                 message.messageId = (long)Convert.ChangeType(items[3], TypeCode.Int64);
 
-                if (message.messageType == (byte)MessageType.Audio)
-                {
-                    if (CheckBinaryType(items[5]))
-                        message.binaryMessage = (byte[])items[5];
-                    else
-                    {
-                        message.audioInfo = BuildAudioInfo((string)Convert.ChangeType(items[5], TypeCode.String), errorRecorder);
-
-                        if (message.audioInfo != null)
-                            message.stringMessage = message.audioInfo.recognizedText;
-                    }
-                }
+                if (!CheckBinaryType(items[5]))
+                    message.stringMessage = (string)Convert.ChangeType(items[5], TypeCode.String);
                 else
-                {
-                    if (!CheckBinaryType(items[5]))
-                        message.stringMessage = (string)Convert.ChangeType(items[5], TypeCode.String);
-                    else
-                        message.binaryMessage = (byte[])items[5];
-                }
+                    message.binaryMessage = (byte[])items[5];
 
                 message.attrs = (string)Convert.ChangeType(items[6], TypeCode.String);
                 message.modifiedTime = (long)Convert.ChangeType(items[7], TypeCode.Int64);
+
+                if (message.messageType >= 40 && message.messageType <= 50)
+                    RTMServerClient.BuildFileInfo(message, errorRecorder);
 
                 result.messages.Add(message);
             }
@@ -1029,21 +987,13 @@ namespace com.fpnn.rtm
 
             object originalMessage = answer.Want("msg");
 
-            if (message.messageType != (byte)MessageType.Audio)
-            {
-
-                if (CheckBinaryType(originalMessage))
-                    message.binaryMessage = (byte[])originalMessage;
-                else
-                    message.binaryMessage = ConvertStringToByteArray((string)Convert.ChangeType(originalMessage, TypeCode.String));
-            }
+            if (!CheckBinaryType(originalMessage))
+                message.stringMessage = (string)Convert.ChangeType(originalMessage, TypeCode.String);
             else
-            {
-                if (!CheckBinaryType(originalMessage))
-                    message.stringMessage = (string)Convert.ChangeType(originalMessage, TypeCode.String);
-                else
-                    message.binaryMessage = (byte[])originalMessage;
-            }
+                message.binaryMessage = (byte[])originalMessage;
+
+            if (message.messageType >= 40 && message.messageType <= 50)
+                RTMServerClient.BuildFileInfo(message, errorRecorder);
 
             return message;
         }
