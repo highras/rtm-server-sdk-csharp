@@ -63,6 +63,7 @@ namespace com.fpnn.rtm
         public RTMServerClient(int projectId, string secretKey, string endpoint)
         {
             interLocker = new object();
+            MidGenerator.Init();
             autoReconnect = true;
             requireClose = false;
             routineInited = false;
