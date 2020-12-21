@@ -176,7 +176,8 @@ Please get your project params from RTM Console.
 ### RTM Error Code
 
 Please refer [RTM Error Code](src/rtm/RTMErrorCode.cs)
-[FPNN SDK (Transport Layer) Error Codes](src/fpnn/ErrorCode.cs)
+
+Please refer [FPNN SDK (Transport Layer) Error Codes](src/fpnn/ErrorCode.cs)
 
 
 ### Structures
