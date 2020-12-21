@@ -262,9 +262,11 @@ Return Values:
 
 	//-- Async Method
 	public void AddGroupBan(Action<int> callback, long groupId, long userId, int banTime, int timeout = 0)
+	public void AddGroupBan(Action<int> callback, long userId, int banTime, int timeout = 0)
 	
 	//-- Sync Method
 	public int AddGroupBan(long groupId, long userId, int banTime, int timeout = 0)
+	public int AddGroupBan(long userId, int banTime, int timeout = 0)
 
 Add group ban.
 
@@ -276,7 +278,7 @@ Parameters:
 
 + `long groupId`
 
-  Group ID.
+  Group ID. If you use the overloaded version without groupId， means the user is baned for all groups.
 
 + `long userId`
 
@@ -309,9 +311,11 @@ Return Values:
 
 	//-- Async Method
 	public void RemoveGroupBan(Action<int> callback, long groupId, long userId, int timeout = 0)
+	public void RemoveGroupBan(Action<int> callback, long userId, int timeout = 0)
 	
 	//-- Sync Method
 	public int RemoveGroupBan(long groupId, long userId, int timeout = 0)
+	public int RemoveGroupBan(long userId, int timeout = 0)
 
 Remove group ban.
 
@@ -323,7 +327,7 @@ Parameters:
 
 + `long groupId`
 
-  Group ID.
+  Group ID. If you use the overloaded version without groupId， means the user is removed ban for all groups.
 
 + `long userId`
 

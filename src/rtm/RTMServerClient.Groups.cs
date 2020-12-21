@@ -270,6 +270,36 @@ namespace com.fpnn.rtm
             return fpnn.ErrorCode.FPNN_EC_OK;
         }
 
+        public void AddGroupBan(Action<int> callback, long userId, int banTime, int timeout = 0)
+        {
+            Quest quest = GenerateQuest("addgroupban");
+            quest.Param("uid", userId);
+            quest.Param("btime", banTime);
+
+            bool status = client.SendQuest(quest, (Answer answer, int errorCode) => { 
+                callback(errorCode);
+            }, timeout);
+
+            if (!status)
+                ClientEngine.RunTask(() =>
+                {
+                    callback(fpnn.ErrorCode.FPNN_EC_CORE_INVALID_CONNECTION);
+                });
+        }
+
+        public int AddGroupBan(long userId, int banTime, int timeout = 0)
+        {
+            Quest quest = GenerateQuest("addgroupban");
+            quest.Param("uid", userId);
+            quest.Param("btime", banTime);
+
+            Answer answer = client.SendQuest(quest, timeout);
+            if (answer.IsException())
+                return answer.ErrorCode();
+
+            return fpnn.ErrorCode.FPNN_EC_OK;
+        }
+
         public void RemoveGroupBan(Action<int> callback, long groupId, long userId, int timeout = 0)
         {
             Quest quest = GenerateQuest("removegroupban");
@@ -291,6 +321,34 @@ namespace com.fpnn.rtm
         {
             Quest quest = GenerateQuest("removegroupban");
             quest.Param("gid", groupId);
+            quest.Param("uid", userId);
+
+            Answer answer = client.SendQuest(quest, timeout);
+            if (answer.IsException())
+                return answer.ErrorCode();
+
+            return fpnn.ErrorCode.FPNN_EC_OK;
+        }
+
+        public void RemoveGroupBan(Action<int> callback, long userId, int timeout = 0)
+        {
+            Quest quest = GenerateQuest("removegroupban");
+            quest.Param("uid", userId);
+
+            bool status = client.SendQuest(quest, (Answer answer, int errorCode) => { 
+                callback(errorCode);
+            }, timeout);
+
+            if (!status)
+                ClientEngine.RunTask(() =>
+                {
+                    callback(fpnn.ErrorCode.FPNN_EC_CORE_INVALID_CONNECTION);
+                });
+        }
+
+        public int RemoveGroupBan(long userId, int timeout = 0)
+        {
+            Quest quest = GenerateQuest("removegroupban");
             quest.Param("uid", userId);
 
             Answer answer = client.SendQuest(quest, timeout);

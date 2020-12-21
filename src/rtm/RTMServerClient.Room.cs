@@ -26,8 +26,38 @@ namespace com.fpnn.rtm
 
         public int AddRoomBan(long roomId, long userId, int banTime, int timeout = 0)
         {
-            Quest quest = GenerateQuest("addgroupban");
+            Quest quest = GenerateQuest("addroomban");
             quest.Param("rid", roomId);
+            quest.Param("uid", userId);
+            quest.Param("btime", banTime);
+
+            Answer answer = client.SendQuest(quest, timeout);
+            if (answer.IsException())
+                return answer.ErrorCode();
+
+            return fpnn.ErrorCode.FPNN_EC_OK;
+        }
+
+        public void AddRoomBan(Action<int> callback, long userId, int banTime, int timeout = 0)
+        {
+            Quest quest = GenerateQuest("addroomban");
+            quest.Param("uid", userId);
+            quest.Param("btime", banTime);
+
+            bool status = client.SendQuest(quest, (Answer answer, int errorCode) => { 
+                callback(errorCode);
+            }, timeout);
+
+            if (!status)
+                ClientEngine.RunTask(() =>
+                {
+                    callback(fpnn.ErrorCode.FPNN_EC_CORE_INVALID_CONNECTION);
+                });
+        }
+
+        public int AddRoomBan(long userId, int banTime, int timeout = 0)
+        {
+            Quest quest = GenerateQuest("addroomban");
             quest.Param("uid", userId);
             quest.Param("btime", banTime);
 
@@ -59,6 +89,34 @@ namespace com.fpnn.rtm
         {
             Quest quest = GenerateQuest("removeroomban");
             quest.Param("rid", roomId);
+            quest.Param("uid", userId);
+
+            Answer answer = client.SendQuest(quest, timeout);
+            if (answer.IsException())
+                return answer.ErrorCode();
+
+            return fpnn.ErrorCode.FPNN_EC_OK;
+        }
+
+        public void RemoveRoomBan(Action<int> callback, long userId, int timeout = 0)
+        {
+            Quest quest = GenerateQuest("removeroomban");
+            quest.Param("uid", userId);
+
+            bool status = client.SendQuest(quest, (Answer answer, int errorCode) => { 
+                callback(errorCode);
+            }, timeout);
+
+            if (!status)
+                ClientEngine.RunTask(() =>
+                {
+                    callback(fpnn.ErrorCode.FPNN_EC_CORE_INVALID_CONNECTION);
+                });
+        }
+
+        public int RemoveRoomBan(long userId, int timeout = 0)
+        {
+            Quest quest = GenerateQuest("removeroomban");
             quest.Param("uid", userId);
 
             Answer answer = client.SendQuest(quest, timeout);
@@ -271,6 +329,109 @@ namespace com.fpnn.rtm
             }
         }
 
+        public void GetRoomMembers(Action<HashSet<long>, int> callback, long roomId, int timeout = 0)
+        {
+            Quest quest = GenerateQuest("getroommembers");
+            quest.Param("rid", roomId);
 
+            bool status = client.SendQuest(quest, (Answer answer, int errorCode) => {
+
+                HashSet<long> uids = null;
+
+                if (errorCode == fpnn.ErrorCode.FPNN_EC_OK)
+                {
+                    try
+                    {
+                        uids = WantLongHashSet(answer, "uids");
+                    }
+                    catch (Exception)
+                    {
+                        errorCode = fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
+                    }
+                }
+                callback(uids, errorCode);
+            }, timeout);
+
+            if (!status)
+                ClientEngine.RunTask(() =>
+                {
+                    callback(null, fpnn.ErrorCode.FPNN_EC_CORE_INVALID_CONNECTION);
+                });
+        }
+
+        public int GetRoomMembers(out HashSet<long> userIds, long roomId, int timeout = 0)
+        {
+            userIds = null;
+
+            Quest quest = GenerateQuest("getroommembers");
+            quest.Param("rid", roomId);
+            Answer answer = client.SendQuest(quest, timeout);
+
+            if (answer.IsException())
+                return answer.ErrorCode();
+
+            try
+            {
+                userIds = WantLongHashSet(answer, "uids");
+                return fpnn.ErrorCode.FPNN_EC_OK;
+            }
+            catch (Exception)
+            {
+                return fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
+            }
+        }
+
+        public void GetRoomMemberCount(Action<int, int> callback, long roomId, int timeout = 0)
+        {
+            Quest quest = GenerateQuest("getroomcount");
+            quest.Param("rid", roomId);
+
+            bool status = client.SendQuest(quest, (Answer answer, int errorCode) => {
+
+                int count = 0;
+
+                if (errorCode == fpnn.ErrorCode.FPNN_EC_OK)
+                {
+                    try
+                    {
+                        count = answer.Get<int>("cn", 0); 
+                    }
+                    catch (Exception)
+                    {
+                        errorCode = fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
+                    }
+                }
+                callback(count, errorCode);
+            }, timeout);
+
+            if (!status)
+                ClientEngine.RunTask(() =>
+                {
+                    callback(0, fpnn.ErrorCode.FPNN_EC_CORE_INVALID_CONNECTION);
+                });
+        }
+
+        public int GetRoomMemberCount(out int count, long roomId, int timeout = 0)
+        {
+            count = 0;
+
+            Quest quest = GenerateQuest("getroomcount");
+            quest.Param("rid", roomId);
+
+            Answer answer = client.SendQuest(quest, timeout);
+
+            if (answer.IsException())
+                return answer.ErrorCode();
+
+            try
+            {
+                count = answer.Get<int>("cn", 0); 
+                return fpnn.ErrorCode.FPNN_EC_OK;
+            }
+            catch (Exception)
+            {
+                return fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
+            }
+        }
     }
 }

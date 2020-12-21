@@ -171,7 +171,7 @@ Please get your project params from RTM Console.
 
 ## Current Version
 
-	public static readonly string com.fpnn.rtm.RTMServerConfig.SDKVersion = "1.1.1";
+	public static readonly string com.fpnn.rtm.RTMServerConfig.SDKVersion = "1.1.2";
 
 ### RTM Error Code
 

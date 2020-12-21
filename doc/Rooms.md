@@ -8,9 +8,11 @@
 
 	//-- Async Method
 	public void AddRoomBan(Action<int> callback, long roomId, long userId, int banTime, int timeout = 0)
+	public void AddRoomBan(Action<int> callback, long userId, int banTime, int timeout = 0)
 	
 	//-- Sync Method
 	public int AddRoomBan(long roomId, long userId, int banTime, int timeout = 0)
+	public int AddRoomBan(long userId, int banTime, int timeout = 0)
 
 Add room ban.
 
@@ -22,7 +24,7 @@ Parameters:
 
 + `long roomId`
 
-  Room ID.
+  Room ID. If you use the overloaded version without roomId， means the user is baned for all rooms.
 
 + `long userId`
 
@@ -55,9 +57,11 @@ Return Values:
 
 	//-- Async Method
 	public void RemoveRoomBan(Action<int> callback, long roomId, long userId, int timeout = 0)
+	public void RemoveRoomBan(Action<int> callback, long userId, int timeout = 0)
 	
 	//-- Sync Method
 	public int RemoveRoomBan(long roomId, long userId, int timeout = 0)
+	public int RemoveRoomBan(long userId, int timeout = 0)
 
 Remove room ban.
 
@@ -69,7 +73,7 @@ Parameters:
 
 + `long roomId`
 
-  Room ID.
+  Room ID. If you use the overloaded version without roomId， means the user is removed ban for all rooms.
 
 + `long userId`
 
@@ -319,3 +323,83 @@ Return Values:
 	0 or com.fpnn.ErrorCode.FPNN_EC_OK means calling successed.
 
 	Others are the reason for calling failed.
+
+
+### Get Room Members
+
+	//-- Async Method
+	public void GetRoomMembers(Action<HashSet<long>, int> callback, long roomId, int timeout = 0)
+	
+	//-- Sync Method
+	public int GetRoomMembers(out HashSet<long> userIds, long roomId, int timeout = 0)
+
+Get room members.
+
++ `Action<HashSet<long>, int> callback`
+
+	Callabck for async method.  
+	First `HashSet<long>` is gotten room members' uids;  
+	Second `int` is the error code indicating the calling is successful or the failed reasons.
+
++ `out HashSet<long> uids`
+
+	The gotten room members' uids.
+
++ `long roomId`
+
+	Room id.
+
++ `int timeout`
+
+	Timeout in second.
+
+	0 means using default setting.
+
+
+Return Values:
+
++ None for Async
+
++ int for Sync
+
+	0 or com.fpnn.ErrorCode.FPNN_EC_OK means calling successed.
+
+	Others are the reason for calling failed.
+
+
+### Get Room Member Count
+
+	//-- Async Method
+	public void GetRoomMemberCount(Action<int, int> callback, long roomId, int timeout = 0)
+	
+	//-- Sync Method
+	public int GetRoomMemberCount(out int count, long roomId, int timeout = 0)
+
+Check is friends.
+
++ `Action<bool, int> callback`
+
+  Callabck for async method.  
+  First `int` is the member count of the room
+  Second `int` is the error code indicating the calling is successful or the failed reasons.
+
++ `long roomId`
+
+  Room ID.
+
++ `int timeout`
+
+  Timeout in second.
+
+  0 means using default setting.
+
+
+Return Values:
+
++ None for Async
+
++ int for Sync
+
+  0 or com.fpnn.ErrorCode.FPNN_EC_OK means calling successed.
+
+  Others are the reason for calling failed.

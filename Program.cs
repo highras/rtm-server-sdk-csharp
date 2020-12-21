@@ -548,7 +548,6 @@ namespace com.fpnn.rtm.example
             Console.WriteLine("[DeleteRoomMember Sync] errorCode: " + errorCode);
 
             
-
             client.IsGroupMember((bool ok, int errorCode) => 
             {
                 Console.WriteLine("[IsGroupMember Async] errorCode: " + errorCode + " ok: " + ok);
@@ -565,12 +564,28 @@ namespace com.fpnn.rtm.example
             errorCode = client.AddRoomBan(testRoomId, 1, 10);
             Console.WriteLine("[AddRoomBan Sync] errorCode: " + errorCode);
 
+            client.AddRoomBan((int errorCode) => 
+            {
+                Console.WriteLine("[AddRoomBan Async] errorCode: " + errorCode);
+            }, 1, 10);
+
+            errorCode = client.AddRoomBan(1, 10);
+            Console.WriteLine("[AddRoomBan Sync] errorCode: " + errorCode);
+
             client.RemoveRoomBan((int errorCode) => 
             {
                 Console.WriteLine("[RemoveRoomBan Async] errorCode: " + errorCode);
-            }, testGroupId, 1);
+            }, testRoomId, 1);
 
             errorCode = client.RemoveRoomBan(testRoomId, 1);
+            Console.WriteLine("[RemoveRoomBan Sync] errorCode: " + errorCode);
+
+            client.RemoveRoomBan((int errorCode) => 
+            {
+                Console.WriteLine("[RemoveRoomBan Async] errorCode: " + errorCode);
+            }, 1);
+
+            errorCode = client.RemoveRoomBan(1);
             Console.WriteLine("[RemoveRoomBan Sync] errorCode: " + errorCode);
 
             client.IsBanOfRoom((bool ok, int errorCode) => 
@@ -580,6 +595,22 @@ namespace com.fpnn.rtm.example
 
             errorCode = client.IsBanOfRoom(out ok, testFromUserID, 1);
             Console.WriteLine("[IsBanOfRoom Sync] errorCode: " + errorCode + " ok: " + ok);
+
+            client.GetRoomMembers((HashSet<long> uids, int errorCode) => {
+                Console.WriteLine("[GetRoomMembers Async] errorCode: " + errorCode + " uids.Count: " + uids.Count);
+            }, 1);
+
+            HashSet<long> uids;
+            errorCode = client.GetRoomMembers(out uids, 1);
+            Console.WriteLine("[GetRoomMembers Sync] errorCode: " + errorCode + " uids.Count: " + uids.Count);
+
+            client.GetRoomMemberCount((int count, int errorCode) => {
+                Console.WriteLine("[GetRoomMemberCount Async] errorCode: " + errorCode + " count: " + count);
+            }, 1);
+
+            int count;
+            client.GetRoomMemberCount(out count, 1);
+            Console.WriteLine("[GetRoomMemberCount Sync] errorCode: " + errorCode + " count: " + count);
         }
 
         static void UserTest()
