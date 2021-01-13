@@ -682,3 +682,67 @@ Return Values:
 	0 or com.fpnn.ErrorCode.FPNN_EC_OK means calling successed.
 
 	Others are the reason for calling failed.
+
+### Get Message Num
+
+	//-- Async Method
+	public void GetMessageNum(Action<int, int, int> callback, MessageCategory messageCategory, long targetId, HashSet<byte> mTypes = null, long beginMsec = 0, long endMsec = 0, int timeout = 0)
+	
+	//-- Sync Method
+	public int GetMessageNum(out int sender, out int num, MessageCategory messageCategory, long targetId, HashSet<byte> mTypes = null, long beginMsec = 0, long endMsec = 0, int timeout = 0)
+
+Retrieve a sent message.
+
+Parameters:
+
++ `Action<int, int, int> callback`
+
+	Callabck for async method.  
+	First `int` is the number of senders' userIDs that has removed duplicates.
+	Second `int` is the message number.
+	Third `int` is the error code indicating the calling is successful or the failed reasons.
+
++ `out int sender`
+
+	is the number of senders' userIDs that has removed duplicates.	
+
++ `out int num`
+
+	is the message number.
+
++ `MessageCategory messageCategory`
+
+	. MessageCategory.GroupMessage or MessageCategory.RoomMessage
+
++ `long targetId`
+
+	Group ID or Room ID
+
++ `HashSet<byte> mTypes`
+
+	mtypes set.
+
++ `long beginMsec`
+
+	Start msec.
+
++ `long endMsec`
+
+	End msec.
+
++ `int timeout`
+
+	Timeout in second.
+
+	0 means using default setting.
+
+
+Return Values:
+
++ None for Async
+
++ int for Sync
+
+	0 or com.fpnn.ErrorCode.FPNN_EC_OK means calling successed.
+
+	Others are the reason for calling failed.

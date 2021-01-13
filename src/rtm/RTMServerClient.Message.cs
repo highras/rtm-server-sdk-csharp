@@ -1063,5 +1063,99 @@ namespace com.fpnn.rtm
             }
         }
 
+        public void GetMessageNum(Action<int, int, int> callback, MessageCategory messageCategory, long targetId, HashSet<byte> mTypes = null, long beginMsec = 0, long endMsec = 0, int timeout = 0)
+        {
+            byte type = 99;
+            switch (messageCategory)
+            {
+                case MessageCategory.GroupMessage:
+                    type = 2; break;
+                case MessageCategory.RoomMessage:
+                    type = 3; break;
+            }
+            if (type > 3) {
+                ClientEngine.RunTask(() =>
+                {
+                    callback(0, 0, rtm.RTMErrorCode.RTM_EC_INVALID_PARAMETER);
+                });
+                return;
+            }
+            Quest quest = GenerateQuest("getmsgnum");
+            quest.Param("type", type);
+            quest.Param("xid", targetId);
+            if (mTypes != null)
+                quest.Param("mtypes", mTypes);
+            if (beginMsec > 0)
+                quest.Param("begin", beginMsec);
+            if (endMsec > 0)
+                quest.Param("end", endMsec);
+
+            bool status = client.SendQuest(quest, (Answer answer, int errorCode) => { 
+                int sender = 0;
+                int num = 0;
+                if (errorCode == fpnn.ErrorCode.FPNN_EC_OK)
+                {
+                    try
+                    {
+                        sender = answer.Get<int>("sender", 0); 
+                        num = answer.Get<int>("num", 0); 
+                    }
+                    catch (Exception)
+                    {
+                        errorCode = fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
+                    }
+                }
+                callback(sender, num, errorCode);
+            }, timeout);
+
+            if (!status)
+                ClientEngine.RunTask(() =>
+                {
+                    callback(0, 0, fpnn.ErrorCode.FPNN_EC_CORE_INVALID_CONNECTION);
+                });
+        }
+
+        public int GetMessageNum(out int sender, out int num, MessageCategory messageCategory, long targetId, HashSet<byte> mTypes = null, long beginMsec = 0, long endMsec = 0, int timeout = 0)
+        {
+            sender = 0;
+            num = 0;
+            byte type = 99;
+            switch (messageCategory)
+            {
+                case MessageCategory.GroupMessage:
+                    type = 2; break;
+                case MessageCategory.RoomMessage:
+                    type = 3; break;
+            }
+            if (type > 3) {
+                return rtm.RTMErrorCode.RTM_EC_INVALID_PARAMETER;
+            }
+            Quest quest = GenerateQuest("getmsgnum");
+            quest.Param("type", type);
+            quest.Param("xid", targetId);
+            if (mTypes != null)
+                quest.Param("mtypes", mTypes);
+            if (beginMsec > 0)
+                quest.Param("begin", beginMsec);
+            if (endMsec > 0)
+                quest.Param("end", endMsec);
+
+            Answer answer = client.SendQuest(quest, timeout);
+
+            if (answer.IsException())
+                return answer.ErrorCode();
+
+            try
+            {
+                sender = answer.Get<int>("sender", 0); 
+                num = answer.Get<int>("num", 0); 
+                return fpnn.ErrorCode.FPNN_EC_OK;
+            }
+            catch (Exception)
+            {
+                return fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
+            }
+        }
+
     }
 }

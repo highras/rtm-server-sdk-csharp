@@ -208,6 +208,15 @@ namespace com.fpnn.rtm.example
             RetrievedMessage message;
             errorCode = client.GetMessage(out message, testFromUserID, testToUserId, cacheMid, MessageCategory.P2PMessage);
             Console.WriteLine("[GetMessage Sync] errorCode: " + errorCode);
+
+            client.GetMessageNum((int sender, int num, int errorCode) =>
+            {
+                Console.WriteLine("[GetMessageNum Async] errorCode: " + errorCode + " sender: " + sender + " num: " + num);
+            }, MessageCategory.GroupMessage, 666);
+
+            int sender, num;
+            errorCode = client.GetMessageNum(out sender, out num, MessageCategory.GroupMessage, 666);
+            Console.WriteLine("[GetMessageNum Sync] errorCode: " + errorCode + " sender: " + sender + " num: " + num);
         }
 
         static void ChatTest()
@@ -604,13 +613,74 @@ namespace com.fpnn.rtm.example
             errorCode = client.GetRoomMembers(out uids, 1);
             Console.WriteLine("[GetRoomMembers Sync] errorCode: " + errorCode + " uids.Count: " + uids.Count);
 
-            client.GetRoomMemberCount((int count, int errorCode) => {
-                Console.WriteLine("[GetRoomMemberCount Async] errorCode: " + errorCode + " count: " + count);
-            }, 1);
+            client.GetRoomMemberCount((Dictionary<long, int> counts, int errorCode) => {
+                Console.WriteLine("[GetRoomMemberCount Async] errorCode: " + errorCode);
+            }, new HashSet<long>(){1});
 
-            int count;
-            client.GetRoomMemberCount(out count, 1);
-            Console.WriteLine("[GetRoomMemberCount Sync] errorCode: " + errorCode + " count: " + count);
+            Dictionary<long, int> counts;
+            client.GetRoomMemberCount(out counts, new HashSet<long>(){1});
+            Console.WriteLine("[GetRoomMemberCount Sync] errorCode: " + errorCode);
+        }
+
+        static void SystemTest()
+        {
+            int errorCode;
+            client.AddDevicePushOption((int errorCode) => {
+                Console.WriteLine("[AddDevicePushOption Async] errorCode: " + errorCode);
+            }, 123, MessageCategory.P2PMessage, 222);
+
+            errorCode = client.AddDevicePushOption(123, MessageCategory.P2PMessage, 222, new HashSet<byte>(){70, 80, 90});
+
+            client.GetDevicePushOption((Dictionary<long, HashSet<byte>> p2p, Dictionary<long, HashSet<byte>> group, int errorCode) => {
+                Console.WriteLine("[GetDevicePushOption Async] errorCode: " + errorCode);
+                foreach (var item in p2p)
+                {
+                    Console.WriteLine("uid: " + item.Key);
+                    foreach (var mtype in item.Value)
+                    {
+                        Console.WriteLine(mtype);
+                    }
+                }
+
+                foreach (var item in group)
+                {
+                    Console.WriteLine("gid: " + item.Key);
+                    foreach (var mtype in item.Value)
+                    {
+                        Console.WriteLine(mtype);
+                    }
+                }
+
+            }, 123);
+
+            client.RemoveDevicePushOption((int errorCode) => {
+                Console.WriteLine("[RemoveDevicePushOption Async] errorCode: " + errorCode);
+            }, 123, MessageCategory.P2PMessage, 222);
+
+            errorCode = client.RemoveDevicePushOption(123, MessageCategory.P2PMessage, 222, new HashSet<byte>(){70});
+            Console.WriteLine("[RemoveDevicePushOption Sync] errorCode: " + errorCode);
+
+            Dictionary<long, HashSet<byte>> p2p;
+            Dictionary<long, HashSet<byte>> group;
+            errorCode = client.GetDevicePushOption(out p2p, out group, 123);
+            Console.WriteLine("[GetDevicePushOption Sync] errorCode: " + errorCode);
+            foreach (var item in p2p)
+            {
+                Console.WriteLine("uid: " + item.Key);
+                foreach (var mtype in item.Value)
+                {
+                    Console.WriteLine(mtype);
+                }
+            }
+
+            foreach (var item in group)
+            {
+                Console.WriteLine("gid: " + item.Key);
+                foreach (var mtype in item.Value)
+                {
+                    Console.WriteLine(mtype);
+                }
+            }
         }
 
         static void UserTest()
@@ -692,6 +762,7 @@ namespace com.fpnn.rtm.example
             GroupTest();
             RoomTest();
             UserTest();
+            SystemTest();
 
             Thread.Sleep(5000);
         }

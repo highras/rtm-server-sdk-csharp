@@ -381,42 +381,42 @@ namespace com.fpnn.rtm
             }
         }
 
-        public void GetRoomMemberCount(Action<int, int> callback, long roomId, int timeout = 0)
+        public void GetRoomMemberCount(Action<Dictionary<long, int>, int> callback, HashSet<long> roomIds, int timeout = 0)
         {
             Quest quest = GenerateQuest("getroomcount");
-            quest.Param("rid", roomId);
+            quest.Param("rids", roomIds);
 
             bool status = client.SendQuest(quest, (Answer answer, int errorCode) => {
 
-                int count = 0;
+                Dictionary<long, int> counts = null;
 
                 if (errorCode == fpnn.ErrorCode.FPNN_EC_OK)
                 {
                     try
                     {
-                        count = answer.Get<int>("cn", 0); 
+                        counts = WantLongIntDictionary(answer, "cn"); 
                     }
                     catch (Exception)
                     {
                         errorCode = fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
                     }
                 }
-                callback(count, errorCode);
+                callback(counts, errorCode);
             }, timeout);
 
             if (!status)
                 ClientEngine.RunTask(() =>
                 {
-                    callback(0, fpnn.ErrorCode.FPNN_EC_CORE_INVALID_CONNECTION);
+                    callback(null, fpnn.ErrorCode.FPNN_EC_CORE_INVALID_CONNECTION);
                 });
         }
 
-        public int GetRoomMemberCount(out int count, long roomId, int timeout = 0)
+        public int GetRoomMemberCount(out Dictionary<long, int> counts, HashSet<long> roomIds, int timeout = 0)
         {
-            count = 0;
+            counts = null;
 
             Quest quest = GenerateQuest("getroomcount");
-            quest.Param("rid", roomId);
+            quest.Param("rids", roomIds);
 
             Answer answer = client.SendQuest(quest, timeout);
 
@@ -425,7 +425,7 @@ namespace com.fpnn.rtm
 
             try
             {
-                count = answer.Get<int>("cn", 0); 
+                counts = WantLongIntDictionary(answer, "cn");
                 return fpnn.ErrorCode.FPNN_EC_OK;
             }
             catch (Exception)

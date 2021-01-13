@@ -370,22 +370,22 @@ Return Values:
 ### Get Room Member Count
 
 	//-- Async Method
-	public void GetRoomMemberCount(Action<int, int> callback, long roomId, int timeout = 0)
+	public void GetRoomMemberCount(Action<Dictionary<long, int>, int> callback, HashSet<long> roomIds, int timeout = 0)
 	
 	//-- Sync Method
-	public int GetRoomMemberCount(out int count, long roomId, int timeout = 0)
+	public int GetRoomMemberCount(out Dictionary<long, int> counts, HashSet<long> roomIds, int timeout = 0)
 
-Check is friends.
+Check room member count.
 
-+ `Action<bool, int> callback`
++ `Action<Dictionary<long, int>, int> callback`
 
   Callabck for async method.  
-  First `int` is the member count of the room
+  First `Dictionary<long, int>` is the map of member count, rid => count
   Second `int` is the error code indicating the calling is successful or the failed reasons.
 
-+ `long roomId`
++ `HashSet<long> roomIds`
 
-  Room ID.
+  Room IDs.
 
 + `int timeout`
 
