@@ -729,6 +729,79 @@ namespace com.fpnn.rtm.example
             }, true, true, true, true);
         }
 
+        static void RtcTest() 
+        {
+            client.InviteUserIntoVoiceRoom((int errorCode) => 
+            {
+                Console.WriteLine("[InviteUserIntoVoiceRoom Async] errorCode: " + errorCode);
+            }, 111, new HashSet<long>(){1, 2, 3}, 666);
+
+            int errorCode;
+
+            errorCode = client.InviteUserIntoVoiceRoom(111, new HashSet<long>(){1, 2, 3}, 666);
+            Console.WriteLine("[InviteUserIntoVoiceRoom Sync] errorCode: " + errorCode);
+
+            client.CloseVoiceRoom((int errorCode) => 
+            {
+                Console.WriteLine("[CloseVoiceRoom Async] errorCode: " + errorCode);
+            }, 666);
+
+            errorCode = client.CloseVoiceRoom(666);
+            Console.WriteLine("[CloseVoiceRoom Sync] errorCode: " + errorCode);
+
+            client.KickoutFromVoiceRoom((int errorCode) => 
+            {
+                Console.WriteLine("[KickoutFromVoiceRoom Async] errorCode: " + errorCode);
+            }, 666, 111, 222);
+
+            errorCode = client.KickoutFromVoiceRoom(666, 111, 222);
+            Console.WriteLine("[KickoutFromVoiceRoom Sync] errorCode: " + errorCode);
+
+            client.GetVoiceRoomList((HashSet<long> roomIds, int errorCode) => 
+            {
+                Console.WriteLine("[GetVoiceRoomList Async] errorCode: " + errorCode);
+            });
+
+            HashSet<long> roomIds;
+            errorCode = client.GetVoiceRoomList(out roomIds);
+            Console.WriteLine("[GetVoiceRoomList Sync] errorCode: " + errorCode);
+
+            client.GetVoiceRoomMembers((HashSet<long> uids, HashSet<long> managers, int errorCode) => 
+            {
+                Console.WriteLine("[GetVoiceRoomMembers Async] errorCode: " + errorCode);
+            }, 111);
+
+            HashSet<long> uids;
+            HashSet<long> managers;
+            errorCode = client.GetVoiceRoomMembers(out uids, out managers, 111);
+            Console.WriteLine("[GetVoiceRoomMembers Sync] errorCode: " + errorCode);
+
+            client.GetVoiceRoomMemberCount((int count, int errorCode) => 
+            {
+                Console.WriteLine("[GetVoiceRoomMemberCount Async] errorCode: " + errorCode);
+            }, 111);
+
+            int count;
+            errorCode = client.GetVoiceRoomMemberCount(out count, 111);
+            Console.WriteLine("[GetVoiceRoomMemberCount Sync] errorCode: " + errorCode);
+
+            client.SetVoiceRoomMicStatus((int errorCode) => 
+            {
+                Console.WriteLine("[SetVoiceRoomMicStatus Async] errorCode: " + errorCode);
+            }, 666, true);
+
+            errorCode = client.SetVoiceRoomMicStatus(666, true);
+            Console.WriteLine("[SetVoiceRoomMicStatus Sync] errorCode: " + errorCode);
+
+            client.PullIntoVoiceRoom((int errorCode) => 
+            {
+                Console.WriteLine("[PullIntoVoiceRoom Async] errorCode: " + errorCode);
+            }, 111, new HashSet<long>(){1, 2, 3});
+
+            errorCode = client.PullIntoVoiceRoom(111, new HashSet<long>(){1, 2, 3});
+            Console.WriteLine("[PullIntoVoiceRoom Sync] errorCode: " + errorCode);
+        }
+
         static void Main(string[] args)
         {
 
@@ -763,6 +836,7 @@ namespace com.fpnn.rtm.example
             RoomTest();
             UserTest();
             SystemTest();
+            RtcTest();
 
             Thread.Sleep(5000);
         }

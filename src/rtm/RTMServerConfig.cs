@@ -4,8 +4,8 @@ namespace com.fpnn.rtm
 {
     public class RTMServerConfig
     {
-        public static readonly string SDKVersion = "1.1.4";
-        public static readonly string InterfaceVersion = "2.6.1";
+        public static readonly string SDKVersion = "1.1.5";
+        public static readonly string InterfaceVersion = "2.7.0";
 
         public static int globalConnectTimeoutSeconds = 30;
         internal static int globalQuestTimeoutSeconds = 30;

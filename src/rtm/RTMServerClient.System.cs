@@ -6,12 +6,10 @@ namespace com.fpnn.rtm
 {
     public partial class RTMServerClient
     {
-        public void Kickout(Action<int> callback, long userId, string clientEndpoint = null, int timeout = 0)
+        public void Kickout(Action<int> callback, long userId, int timeout = 0)
         {
             Quest quest = GenerateQuest("kickout");
             quest.Param("uid", userId);
-            if (clientEndpoint != null)
-                quest.Param("ce", clientEndpoint);
 
             bool status = client.SendQuest(quest, (Answer answer, int errorCode) => { 
                 callback(errorCode);
@@ -24,13 +22,11 @@ namespace com.fpnn.rtm
                 });
         }
 
-        public int Kickout(long userId, string clientEndpoint = null, int timeout = 0)
+        public int Kickout(long userId, int timeout = 0)
         {
             Quest quest = GenerateQuest("kickout");
             quest.Param("uid", userId);
-            if (clientEndpoint != null)
-                quest.Param("ce", clientEndpoint);
-
+            
             Answer answer = client.SendQuest(quest, timeout);
             if (answer.IsException())
                 return answer.ErrorCode();

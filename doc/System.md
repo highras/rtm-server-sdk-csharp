@@ -8,10 +8,10 @@
 ### Kickout
 
 	//-- Async Method
-	public void Kickout(Action<int> callback, long userId, string clientEndpoint = null, int timeout = 0)
+	public void Kickout(Action<int> callback, long userId, int timeout = 0)
 	
 	//-- Sync Method
-	public int Kickout(long userId, string clientEndpoint = null, int timeout = 0)
+	public int Kickout(long userId, int timeout = 0)
 
 Kickout a login user.
 
@@ -22,10 +22,6 @@ Parameters:
 + `long userId`
 
   User ID.
-
-+ `string clientEndpoint`
-
-  Default is null, the rtm endpoint of the user logined, used for multi-user login
 
 + `int timeout`
 
