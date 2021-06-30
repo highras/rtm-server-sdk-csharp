@@ -6,9 +6,9 @@ namespace com.fpnn.rtm
 {
     public partial class RTMServerClient
     {
-        public void InviteUserIntoVoiceRoom(Action<int> callback, long roomId, HashSet<long> toUids, long fromUid, int timeout = 0)
+        public void InviteUserIntoRTCRoom(Action<int> callback, long roomId, HashSet<long> toUids, long fromUid, int timeout = 0)
         {
-            Quest quest = GenerateQuest("inviteUserIntoVoiceRoom");
+            Quest quest = GenerateQuest("inviteUserIntoRTCRoom");
             quest.Param("rid", roomId);
             quest.Param("toUids", toUids);
             quest.Param("fromUid", fromUid);
@@ -22,9 +22,9 @@ namespace com.fpnn.rtm
                 });
         }
 
-        public int InviteUserIntoVoiceRoom(long roomId, HashSet<long> toUids, long fromUid, int timeout = 0)
+        public int InviteUserIntoRTCRoom(long roomId, HashSet<long> toUids, long fromUid, int timeout = 0)
         {
-            Quest quest = GenerateQuest("inviteUserIntoVoiceRoom");
+            Quest quest = GenerateQuest("inviteUserIntoRTCRoom");
             quest.Param("rid", roomId);
             quest.Param("toUids", toUids);
             quest.Param("fromUid", fromUid);
@@ -33,9 +33,9 @@ namespace com.fpnn.rtm
             return answer.ErrorCode();
         }
 
-        public void CloseVoiceRoom(Action<int> callback, long roomId, int timeout = 0)
+        public void CloseRTCRoom(Action<int> callback, long roomId, int timeout = 0)
         {
-            Quest quest = GenerateQuest("closeVoiceRoom");
+            Quest quest = GenerateQuest("closeRTCRoom");
             quest.Param("rid", roomId);
 
             bool status = client.SendQuest(quest, (Answer answer, int errorCode) => { callback(errorCode); }, timeout);
@@ -47,18 +47,18 @@ namespace com.fpnn.rtm
                 });
         }
 
-        public int CloseVoiceRoom(long roomId, int timeout = 0)
+        public int CloseRTCRoom(long roomId, int timeout = 0)
         {
-            Quest quest = GenerateQuest("closeVoiceRoom");
+            Quest quest = GenerateQuest("closeRTCRoom");
             quest.Param("rid", roomId);
 
             Answer answer = client.SendQuest(quest, timeout);
             return answer.ErrorCode();
         }
 
-        public void KickoutFromVoiceRoom(Action<int> callback, long userId, long roomId, long fromUid, int timeout = 0)
+        public void KickoutFromRTCRoom(Action<int> callback, long userId, long roomId, long fromUid, int timeout = 0)
         {
-            Quest quest = GenerateQuest("kickoutFromVoiceRoom");
+            Quest quest = GenerateQuest("kickoutFromRTCRoom");
             quest.Param("uid", userId);
             quest.Param("rid", roomId);
             quest.Param("fromUid", fromUid);
@@ -72,9 +72,9 @@ namespace com.fpnn.rtm
                 });
         }
 
-        public int KickoutFromVoiceRoom(long userId, long roomId, long fromUid, int timeout = 0)
+        public int KickoutFromRTCRoom(long userId, long roomId, long fromUid, int timeout = 0)
         {
-            Quest quest = GenerateQuest("kickoutFromVoiceRoom");
+            Quest quest = GenerateQuest("kickoutFromRTCRoom");
             quest.Param("uid", userId);
             quest.Param("rid", roomId);
             quest.Param("fromUid", fromUid);
@@ -83,9 +83,9 @@ namespace com.fpnn.rtm
             return answer.ErrorCode();
         }
 
-        public void GetVoiceRoomList(Action<HashSet<long>, int> callback, int timeout = 0)
+        public void GetRTCRoomList(Action<HashSet<long>, int> callback, int timeout = 0)
         {
-            Quest quest = GenerateQuest("getVoiceRoomList");
+            Quest quest = GenerateQuest("getRTCRoomList");
             bool status = client.SendQuest(quest, (Answer answer, int errorCode) => {
 
                 HashSet<long> rids = null;
@@ -111,11 +111,11 @@ namespace com.fpnn.rtm
                 });
         }
 
-        public int GetVoiceRoomList(out HashSet<long> roomIds, int timeout = 0)
+        public int GetRTCRoomList(out HashSet<long> roomIds, int timeout = 0)
         {
             roomIds = null;
 
-            Quest quest = GenerateQuest("getVoiceRoomList");
+            Quest quest = GenerateQuest("getRTCRoomList");
             Answer answer = client.SendQuest(quest, timeout);
 
             if (answer.IsException())
@@ -132,43 +132,46 @@ namespace com.fpnn.rtm
             }
         }
 
-        public void GetVoiceRoomMembers(Action<HashSet<long>, HashSet<long>, int> callback, long roomId, int timeout = 0)
+        public void GetRTCRoomMembers(Action<HashSet<long>, HashSet<long>, long, int> callback, long roomId, int timeout = 0)
         {
-            Quest quest = GenerateQuest("getVoiceRoomMembers");
+            Quest quest = GenerateQuest("getRTCRoomMembers");
             quest.Param("rid", roomId);
             bool status = client.SendQuest(quest, (Answer answer, int errorCode) => {
 
                 HashSet<long> uids = null;
-                HashSet<long> managers = null;
+                HashSet<long> administrators = null;
+                long owner = -1;
 
                 if (errorCode == fpnn.ErrorCode.FPNN_EC_OK)
                 {
                     try
                     {
                         uids = WantLongHashSet(answer, "uids");
-                        managers = WantLongHashSet(answer, "managers");
+                        administrators = WantLongHashSet(answer, "administrators");
+                        owner = answer.Get<long>("owner", -1);
                     }
                     catch (Exception)
                     {
                         errorCode = fpnn.ErrorCode.FPNN_EC_CORE_INVALID_PACKAGE;
                     }
                 }
-                callback(uids, managers, errorCode);
+                callback(uids, administrators, owner, errorCode);
             }, timeout);
 
             if (!status)
                 ClientEngine.RunTask(() =>
                 {
-                     callback(null, null, fpnn.ErrorCode.FPNN_EC_CORE_INVALID_CONNECTION);
+                     callback(null, null, -1, fpnn.ErrorCode.FPNN_EC_CORE_INVALID_CONNECTION);
                 });
         }
 
-        public int GetVoiceRoomMembers(out HashSet<long> userIds, out HashSet<long> managerIds, long roomId, int timeout = 0)
+        public int GetRTCRoomMembers(out HashSet<long> userIds, out HashSet<long> managerIds, out long owner, long roomId, int timeout = 0)
         {
             userIds = null;
             managerIds = null;
+            owner = -1;
 
-            Quest quest = GenerateQuest("getVoiceRoomMembers");
+            Quest quest = GenerateQuest("getRTCRoomMembers");
             quest.Param("rid", roomId);
             Answer answer = client.SendQuest(quest, timeout);
 
@@ -178,7 +181,8 @@ namespace com.fpnn.rtm
             try
             {
                 userIds = WantLongHashSet(answer, "uids");
-                managerIds = WantLongHashSet(answer, "managers");
+                managerIds = WantLongHashSet(answer, "administrators");
+                owner = answer.Get<long>("owner", -1);
                 return fpnn.ErrorCode.FPNN_EC_OK;
             }
             catch (Exception)
@@ -187,9 +191,9 @@ namespace com.fpnn.rtm
             }
         }
 
-        public void GetVoiceRoomMemberCount(Action<int, int> callback, long roomId, int timeout = 0)
+        public void GetRTCRoomMemberCount(Action<int, int> callback, long roomId, int timeout = 0)
         {
-            Quest quest = GenerateQuest("getVoiceRoomMemberCount");
+            Quest quest = GenerateQuest("getRTCRoomMemberCount");
             quest.Param("rid", roomId);
             bool status = client.SendQuest(quest, (Answer answer, int errorCode) => {
 
@@ -216,11 +220,11 @@ namespace com.fpnn.rtm
                 });
         }
 
-        public int GetVoiceRoomMemberCount(out int count, long roomId, int timeout = 0)
+        public int GetRTCRoomMemberCount(out int count, long roomId, int timeout = 0)
         {
             count = 0;
 
-            Quest quest = GenerateQuest("getVoiceRoomMemberCount");
+            Quest quest = GenerateQuest("getRTCRoomMemberCount");
             quest.Param("rid", roomId);
             Answer answer = client.SendQuest(quest, timeout);
 
@@ -238,9 +242,9 @@ namespace com.fpnn.rtm
             }
         }
 
-        public void SetVoiceRoomMicStatus(Action<int> callback, long roomId, bool status, int timeout = 0)
+        public void SetRTCRoomMicStatus(Action<int> callback, long roomId, bool status, int timeout = 0)
         {
-            Quest quest = GenerateQuest("setVoiceRoomMicStatus");
+            Quest quest = GenerateQuest("setRTCRoomMicStatus");
             quest.Param("rid", roomId);
             quest.Param("status", status);
 
@@ -253,9 +257,9 @@ namespace com.fpnn.rtm
                 });
         }
 
-        public int SetVoiceRoomMicStatus(long roomId, bool status, int timeout = 0)
+        public int SetRTCRoomMicStatus(long roomId, bool status, int timeout = 0)
         {
-            Quest quest = GenerateQuest("setVoiceRoomMicStatus");
+            Quest quest = GenerateQuest("setRTCRoomMicStatus");
             quest.Param("rid", roomId);
             quest.Param("status", status);
 
@@ -263,11 +267,12 @@ namespace com.fpnn.rtm
             return answer.ErrorCode();
         }
 
-        public void PullIntoVoiceRoom(Action<int> callback, long roomId, HashSet<long> toUids, int timeout = 0)
+        public void PullIntoRTCRoom(Action<int> callback, long roomId, HashSet<long> toUids, int type, int timeout = 0)
         {
-            Quest quest = GenerateQuest("pullIntoVoiceRoom");
+            Quest quest = GenerateQuest("pullIntoRTCRoom");
             quest.Param("rid", roomId);
             quest.Param("toUids", toUids);
+            quest.Param("type", type);
 
             bool statusReturn = client.SendQuest(quest, (Answer answer, int errorCode) => { callback(errorCode); }, timeout);
 
@@ -278,15 +283,42 @@ namespace com.fpnn.rtm
                 });
         }
 
-        public int PullIntoVoiceRoom(long roomId, HashSet<long> toUids, int timeout = 0)
+        public int PullIntoRTCRoom(long roomId, HashSet<long> toUids, int type, int timeout = 0)
         {
-            Quest quest = GenerateQuest("pullIntoVoiceRoom");
+            Quest quest = GenerateQuest("pullIntoRTCRoom");
             quest.Param("rid", roomId);
             quest.Param("toUids", toUids);
+            quest.Param("type", type);
 
             Answer answer = client.SendQuest(quest, timeout);
             return answer.ErrorCode();
         }
 
+        public void AdminCommand(Action<int> callback, long roomId, HashSet<long> uids, int command, int timeout = 0)
+        {
+            Quest quest = GenerateQuest("adminCommand");
+            quest.Param("rid", roomId);
+            quest.Param("uids", uids);
+            quest.Param("command", command);
+
+            bool statusReturn = client.SendQuest(quest, (Answer answer, int errorCode) => { callback(errorCode); }, timeout);
+
+            if (!statusReturn)
+                ClientEngine.RunTask(() =>
+                {
+                    callback(fpnn.ErrorCode.FPNN_EC_CORE_INVALID_CONNECTION);
+                });
+        }
+
+        public int AdminCommand(long roomId, HashSet<long> uids, int command, int timeout = 0)
+        {
+            Quest quest = GenerateQuest("adminCommand");
+            quest.Param("rid", roomId);
+            quest.Param("uids", uids);
+            quest.Param("command", command);
+
+            Answer answer = client.SendQuest(quest, timeout);
+            return answer.ErrorCode();
+        }
     }
 }

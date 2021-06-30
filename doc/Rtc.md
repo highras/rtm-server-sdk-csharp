@@ -4,15 +4,15 @@
 
 [TOC]
 
-### Invite User Into Voice Room
+### Invite User Into RTC Room
 
 	//-- Async Method
-	public void InviteUserIntoVoiceRoom(Action<int> callback, long roomId, HashSet<long> toUids, long fromUid, int timeout = 0);
+	public void InviteUserIntoRTCRoom(Action<int> callback, long roomId, HashSet<long> toUids, long fromUid, int timeout = 0);
 	
 	//-- Sync Method
-	public int InviteUserIntoVoiceRoom(long roomId, HashSet<long> toUids, long fromUid, int timeout = 0)
+	public int InviteUserIntoRTCRoom(long roomId, HashSet<long> toUids, long fromUid, int timeout = 0)
 
-Invite User Into Voice Room.
+Invite User Into RTC Room.
 
 Parameters:
 
@@ -51,15 +51,15 @@ Return Values:
 
 
 
-### Close Voice Room
+### Close RTC Room
 
 	//-- Async Method
-	public void CloseVoiceRoom(Action<int> callback, long roomId, int timeout = 0)
+	public void CloseRTCRoom(Action<int> callback, long roomId, int timeout = 0)
 	
 	//-- Sync Method
-	public int CloseVoiceRoom(long roomId, int timeout = 0)
+	public int CloseRTCRoom(long roomId, int timeout = 0)
 
-Close Voice Room.
+Close RTC Room.
 
 Parameters:
 
@@ -90,15 +90,15 @@ Return Values:
 
 
 
-### Kickout From Voice Room
+### Kickout From RTC Room
 
 	//-- Async Method
-	public void KickoutFromVoiceRoom(Action<int> callback, long userId, long roomId, long fromUid, int timeout = 0)
+	public void KickoutFromRTCRoom(Action<int> callback, long userId, long roomId, long fromUid, int timeout = 0)
 	
 	//-- Sync Method
-	public int KickoutFromVoiceRoom(long userId, long roomId, long fromUid, int timeout = 0)
+	public int KickoutFromRTCRoom(long userId, long roomId, long fromUid, int timeout = 0)
 
-Kickout From Voice Room.
+Kickout From RTC Room.
 
 + `Action<int> callback`
 
@@ -135,15 +135,15 @@ Return Values:
 
 
 
-### Get Voice Room List
+### Get RTC Room List
 
 	//-- Async Method
-	public void GetVoiceRoomList(Action<HashSet<long>, int> callback, int timeout = 0)
+	public void GetRTCRoomList(Action<HashSet<long>, int> callback, int timeout = 0)
 	
 	//-- Sync Method
-	public int GetVoiceRoomList(out HashSet<long> roomIds, int timeout = 0)
+	public int GetRTCRoomList(out HashSet<long> roomIds, int timeout = 0)
 
-Get Voice Room List. 
+Get RTC Room List. 
 
 Parameters:
 
@@ -171,15 +171,15 @@ Return Values:
 
 
 
-### Get Voice Room Members
+### Get RTC Room Members
 
 	//-- Async Method
-	public void GetVoiceRoomMembers(Action<HashSet<long>, HashSet<long>, int> callback, long roomId, int timeout = 0)
+	public void GetRTCRoomMembers(Action<HashSet<long>, HashSet<long>, int> callback, long roomId, int timeout = 0)
 	
 	//-- Sync Method
-	public int GetVoiceRoomMembers(out HashSet<long> userIds, out HashSet<long> managerIds, long roomId, int timeout = 0)
+	public int GetRTCRoomMembers(out HashSet<long> userIds, out HashSet<long> managerIds, long roomId, int timeout = 0)
 
-Get Voice Room Members. 
+Get RTC Room Members. 
 
 Parameters:
 
@@ -212,15 +212,15 @@ Return Values:
 
 
 
-### Get Voice Room Member Count
+### Get RTC Room Member Count
 
 	//-- Async Method
-	public void GetVoiceRoomMemberCount(Action<int, int> callback, long roomId, int timeout = 0)
+	public void GetRTCRoomMemberCount(Action<int, int> callback, long roomId, int timeout = 0)
 	
 	//-- Sync Method
-	public int GetVoiceRoomMemberCount(out int count, long roomId, int timeout = 0)
+	public int GetRTCRoomMemberCount(out int count, long roomId, int timeout = 0)
 
-Get Voice Room Member Count.
+Get RTC Room Member Count.
 
 Parameters:
 
@@ -354,10 +354,10 @@ Return Values:
 ### Get Room Member Count
 
 	//-- Async Method
-	public void GetVoiceRoomMemberCount(Action<int, int> callback, long roomId, int timeout = 0)
+	public void GetRTCRoomMemberCount(Action<int, int> callback, long roomId, int timeout = 0)
 	
 	//-- Sync Method
-	public int GetVoiceRoomMemberCount(out int count, long roomId, int timeout = 0)
+	public int GetRTCRoomMemberCount(out int count, long roomId, int timeout = 0)
 
 Get Room Member Count.
 
@@ -390,15 +390,15 @@ Return Values:
 
 
 
-### Set Voice RoomM ic Status
+### Set RTC RoomM ic Status
 
 	//-- Async Method
-	public void SetVoiceRoomMicStatus(Action<int> callback, long roomId, bool status, int timeout = 0)
+	public void SetRTCRoomMicStatus(Action<int> callback, long roomId, bool status, int timeout = 0)
 	
 	//-- Sync Method
-	public int SetVoiceRoomMicStatus(long roomId, bool status, int timeout = 0)
+	public int SetRTCRoomMicStatus(long roomId, bool status, int timeout = 0)
 
-Set Voice RoomM ic Status.
+Set RTC RoomM ic Status.
 
 Parameters:
 
@@ -431,15 +431,15 @@ Return Values:
 
   Others are the reason for calling failed.
 
-### Pull Into Voice Room
+### Pull Into RTC Room
 
 	//-- Async Method
-	public void PullIntoVoiceRoom(Action<int> callback, long roomId, HashSet<long> toUids, int timeout = 0)
+	public void PullIntoRTCRoom(Action<int> callback, long roomId, HashSet<long> toUids, int type, int timeout = 0)
 	
 	//-- Sync Method
-	public int PullIntoVoiceRoom(long roomId, HashSet<long> toUids, int timeout = 0)
+	public int PullIntoRTCRoom(long roomId, HashSet<long> toUids, int type, int timeout = 0)
 
-Pull Into Voice Room.
+Pull Into RTC Room.
 
 Parameters:
 
@@ -454,6 +454,55 @@ Parameters:
 + `HashSet<long> toUids`
 
   Set of the uids pulled.
+
++ `int type`
+
+  type of the room, 0 for voice room, 1 for video room
+
++ `int timeout`
+
+  Timeout in second.
+
+  0 means using default setting.
+
+
+Return Values:
+
++ None for Async
+
++ int for Sync
+
+  0 or com.fpnn.ErrorCode.FPNN_EC_OK means calling successed.
+
+  Others are the reason for calling failed.
+
+### Administrator Command Operation
+
+	//-- Async Method
+    public void AdminCommand(Action<int> callback, long roomId, HashSet<long> uids, int command, int timeout = 0)
+	
+	//-- Sync Method
+    public int AdminCommand(long roomId, HashSet<long> uids, int command, int timeout = 0)
+
+Administrator Command Operation.
+
+Parameters:
+
++ `Action<int> callback`
+
+  First `int` is the error code indicating the calling is successful or the failed reasons.
+
++ `long roomId`
+
+  Room ID..
+
++ `HashSet<long> uids`
+
+  Set of the uids operated.
+
++ `int command`
+
+  type of the command
 
 + `int timeout`
 

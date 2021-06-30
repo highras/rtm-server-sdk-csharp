@@ -731,75 +731,83 @@ namespace com.fpnn.rtm.example
 
         static void RtcTest() 
         {
-            client.InviteUserIntoVoiceRoom((int errorCode) => 
-            {
-                Console.WriteLine("[InviteUserIntoVoiceRoom Async] errorCode: " + errorCode);
-            }, 111, new HashSet<long>(){1, 2, 3}, 666);
-
             int errorCode;
+            errorCode = client.PullIntoRTCRoom(123456, new HashSet<long>() { 123, 456 }, 1);
+            Console.WriteLine("[PullIntoRTCRoom Sync] errorCode: " + errorCode);
 
-            errorCode = client.InviteUserIntoVoiceRoom(111, new HashSet<long>(){1, 2, 3}, 666);
-            Console.WriteLine("[InviteUserIntoVoiceRoom Sync] errorCode: " + errorCode);
+            client.PullIntoRTCRoom((int errorCode) =>
+            { 
+                Console.WriteLine("[PullIntoRTCRoom Async] errorCode: " + errorCode);
+            }, 123456, new HashSet<long>() {135, 246}, 2);
 
-            client.CloseVoiceRoom((int errorCode) => 
+            errorCode = client.InviteUserIntoRTCRoom(123456, new HashSet<long>(){123, 456}, 111);
+            Console.WriteLine("[InviteUserIntoRTCRoom Sync] errorCode: " + errorCode);
+
+            client.InviteUserIntoRTCRoom((int errorCode) => 
             {
-                Console.WriteLine("[CloseVoiceRoom Async] errorCode: " + errorCode);
-            }, 666);
+                Console.WriteLine("[InviteUserIntoRTCRoom Async] errorCode: " + errorCode);
+            }, 123456, new HashSet<long>(){135, 246}, 111);
 
-            errorCode = client.CloseVoiceRoom(666);
-            Console.WriteLine("[CloseVoiceRoom Sync] errorCode: " + errorCode);
-
-            client.KickoutFromVoiceRoom((int errorCode) => 
+            client.GetRTCRoomList((HashSet<long> roomIds, int errorCode) => 
             {
-                Console.WriteLine("[KickoutFromVoiceRoom Async] errorCode: " + errorCode);
-            }, 666, 111, 222);
-
-            errorCode = client.KickoutFromVoiceRoom(666, 111, 222);
-            Console.WriteLine("[KickoutFromVoiceRoom Sync] errorCode: " + errorCode);
-
-            client.GetVoiceRoomList((HashSet<long> roomIds, int errorCode) => 
-            {
-                Console.WriteLine("[GetVoiceRoomList Async] errorCode: " + errorCode);
+                Console.WriteLine("[GetRTCRoomList Async] errorCode: " + errorCode);
             });
 
             HashSet<long> roomIds;
-            errorCode = client.GetVoiceRoomList(out roomIds);
-            Console.WriteLine("[GetVoiceRoomList Sync] errorCode: " + errorCode);
+            errorCode = client.GetRTCRoomList(out roomIds);
+            Console.WriteLine("[GetRTCRoomList Sync] errorCode: " + errorCode);
 
-            client.GetVoiceRoomMembers((HashSet<long> uids, HashSet<long> managers, int errorCode) => 
+            client.GetRTCRoomMembers((HashSet<long> uids, HashSet<long> administrators, long owner, int errorCode) => 
             {
-                Console.WriteLine("[GetVoiceRoomMembers Async] errorCode: " + errorCode);
-            }, 111);
+                Console.WriteLine("[GetRTCRoomMembers Async] errorCode: " + errorCode);
+            }, 123456);
 
             HashSet<long> uids;
-            HashSet<long> managers;
-            errorCode = client.GetVoiceRoomMembers(out uids, out managers, 111);
-            Console.WriteLine("[GetVoiceRoomMembers Sync] errorCode: " + errorCode);
+            HashSet<long> administrators;
+            long owner;
+            errorCode = client.GetRTCRoomMembers(out uids, out administrators, out owner, 123456);
+            Console.WriteLine("[GetRTCRoomMembers Sync] errorCode: " + errorCode);
 
-            client.GetVoiceRoomMemberCount((int count, int errorCode) => 
+            client.GetRTCRoomMemberCount((int count, int errorCode) => 
             {
-                Console.WriteLine("[GetVoiceRoomMemberCount Async] errorCode: " + errorCode);
-            }, 111);
+                Console.WriteLine("[GetRTCRoomMemberCount Async] errorCode: " + errorCode);
+            }, 123456);
 
             int count;
-            errorCode = client.GetVoiceRoomMemberCount(out count, 111);
-            Console.WriteLine("[GetVoiceRoomMemberCount Sync] errorCode: " + errorCode);
+            errorCode = client.GetRTCRoomMemberCount(out count, 123456);
+            Console.WriteLine("[GetRTCRoomMemberCount Sync] errorCode: " + errorCode);
 
-            client.SetVoiceRoomMicStatus((int errorCode) => 
+            client.SetRTCRoomMicStatus((int errorCode) => 
             {
-                Console.WriteLine("[SetVoiceRoomMicStatus Async] errorCode: " + errorCode);
-            }, 666, true);
+                Console.WriteLine("[SetRTCRoomMicStatus Async] errorCode: " + errorCode);
+            }, 123456, true);
 
-            errorCode = client.SetVoiceRoomMicStatus(666, true);
-            Console.WriteLine("[SetVoiceRoomMicStatus Sync] errorCode: " + errorCode);
+            errorCode = client.SetRTCRoomMicStatus(123456, true);
+            Console.WriteLine("[SetRTCRoomMicStatus Sync] errorCode: " + errorCode);
 
-            client.PullIntoVoiceRoom((int errorCode) => 
+            client.AdminCommand((int errorCode) =>
+            { 
+                Console.WriteLine("[AdminCommand Async] errorCode: " + errorCode);
+            }, 123456, new HashSet<long>() {123, 456}, 0);
+
+            errorCode = client.AdminCommand(123456, new HashSet<long>() {135, 246}, 1);
+            Console.WriteLine("[AdminCommand Sync] errorCode: " + errorCode);
+
+            client.KickoutFromRTCRoom((int errorCode) => 
             {
-                Console.WriteLine("[PullIntoVoiceRoom Async] errorCode: " + errorCode);
-            }, 111, new HashSet<long>(){1, 2, 3});
+                Console.WriteLine("[KickoutFromRTCRoom Async] errorCode: " + errorCode);
+            }, 123, 123456, 111);
 
-            errorCode = client.PullIntoVoiceRoom(111, new HashSet<long>(){1, 2, 3});
-            Console.WriteLine("[PullIntoVoiceRoom Sync] errorCode: " + errorCode);
+            errorCode = client.KickoutFromRTCRoom(456, 123456, 111);
+            Console.WriteLine("[KickoutFromRTCRoom Sync] errorCode: " + errorCode);
+
+            client.CloseRTCRoom((int errorCode) => 
+            {
+                Console.WriteLine("[CloseRTCRoom Async] errorCode: " + errorCode);
+            }, 123456);
+
+            errorCode = client.CloseRTCRoom(123456);
+            Console.WriteLine("[CloseRTCRoom Sync] errorCode: " + errorCode);
         }
 
         static void Main(string[] args)
